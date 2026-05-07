@@ -77,3 +77,17 @@ If **your** credit pool runs out, every try-on (including end-customer ones) ret
 ## Backwards compatibility
 
 The legacy single-tenant flow (no end-customer token) still works exactly as before. Layer 2 only activates when `end_customer_token` is present.
+
+## How drop-in integrations express L2
+
+Drop-in integrations like the [Shopify app](./integrations/shopify) wrap L2 in storefront-friendly UX. On Shopify, the merchant picks one of five **monetisation models** in the app's admin:
+
+| Model | L2 mapping |
+| --- | --- |
+| `FREE_ALL` | No `planId` enforced — every shopper unlimited; merchant absorbs L1 cost |
+| `SUBSCRIPTION` | One Genvoris plan per shop; activated while shopper holds an active Shopify selling plan |
+| `CREDITS_WITH_PURCHASE` | Custom quota stored in the app's DB, granted on `orders/paid`, expires per config |
+| `PAY_PER_USE` | One-shot session minted after a paid Shopify draft order |
+| `FREEMIUM` | Two Genvoris plans per shop (free + paid); upgrade flow via Shopify subscription product |
+
+The underlying API contract is unchanged — the Shopify app calls the same `/api/v1/customers` and `/api/v1/customers/{id}/sessions` endpoints documented here.

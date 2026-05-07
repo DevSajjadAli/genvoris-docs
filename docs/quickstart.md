@@ -6,7 +6,9 @@ description: From zero to a working try-on against a metered end-customer plan i
 
 # Quickstart
 
-This walkthrough takes you from a fresh Genvoris account to a metered try-on running against an end-customer plan, in **five steps**.
+This walkthrough takes you from a fresh Genvoris account to a metered try-on running against an end-customer plan, in **five steps** using the universal REST API.
+
+> **On Shopify?** Skip everything below — the [Shopify app](./integrations/shopify) handles plans, sessions, billing and theme injection for you. Two clicks instead of five steps.
 
 > Prerequisites: a Genvoris store account with at least one verified domain and a credit pack.
 

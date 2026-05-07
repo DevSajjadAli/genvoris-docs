@@ -45,10 +45,13 @@ Genvoris debits Adidas pool + meters customer
 3. **[API reference →](./api/authentication)** — every endpoint, every error code.
 4. **[Embed the widget →](./api/widget)** — drop one script tag on your product page.
 
-## Plugins (coming soon)
+## Drop-in integrations
 
-- Shopify
-- WooCommerce
-- Magento
+| Integration | Status | Docs |
+| --- | --- | --- |
+| Shopify (native app) | **Live** in App Store review | [Shopify integration →](./integrations/shopify) |
+| WooCommerce | Planned | — |
+| Magento | Planned | — |
+| Anything else (custom REST) | Always available | [Custom integration →](./integrations/custom) |
 
-Until those land, the universal flow in [API reference](./api/authentication) works on every stack.
+The universal REST flow under [API reference](./api/authentication) works on every stack — the drop-in integrations above are just convenience wrappers around the same endpoints.
