@@ -10,7 +10,7 @@ Drop-in recipes for popular stacks. Each one mints a session on the server and h
 
 | Stack | What it shows |
 | --- | --- |
-| [Express + Node SDK](./express) | Minimal REST proxy that mints sessions on demand. |
+| [Express](./express) | Minimal REST proxy that mints sessions on demand. |
 | [Next.js App Router](./nextjs) | Server Action that returns a session token to a React Server Component. |
 | [React (any framework)](./react) | `useTryOn()` hook + headless button. |
 | [Vue 3](./vue) | `useTryOn` composable for Vue/Nuxt. |

@@ -6,29 +6,40 @@ description: Server Action mints the session; client component opens the widget.
 
 # Next.js (App Router)
 
-```bash
-npm install @genvoris/node
-```
+This example uses Node's built-in `fetch` — no Genvoris SDK package required.
 
 ```ts title="app/actions/genvoris.ts"
 'use server';
-import Genvoris from '@genvoris/node';
 import { auth } from '@/lib/auth'; // your own auth helper
 
-const gv = new Genvoris({ apiKey: process.env.GENVORIS_API_KEY! });
+const BASE = 'https://genvoris.org/api/v1';
+
+async function gvPost(path: string, body?: object) {
+  const res = await fetch(`${BASE}${path}`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.GENVORIS_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: body ? JSON.stringify(body) : undefined,
+    // Next.js: opt out of the Data Cache for this call
+    cache: 'no-store',
+  });
+  if (!res.ok) throw new Error(`Genvoris ${res.status}`);
+  return res.json();
+}
 
 export async function mintTryOnToken() {
   const { userId, email } = await auth();
   if (!userId) throw new Error('unauthenticated');
 
-  let customer;
-  try {
-    customer = await gv.customers.retrieve(`u_${userId}`);
-  } catch {
-    customer = await gv.customers.create({ externalId: `u_${userId}`, email });
-  }
-  const session = await gv.sessions.mint({ customerId: customer.id, ttlSeconds: 900 });
-  return session.token;
+  // POST /customers is an upsert — safe to call on every page load.
+  const customer = await gvPost('/customers', {
+    externalId: `u_${userId}`,
+    email,
+  });
+  const session = await gvPost(`/customers/${customer.id}/sessions`);
+  return session.token as string;
 }
 ```
 
