@@ -15,8 +15,8 @@ const config: Config = {
   },
 
   // Set the production url of your site here
-  url: 'https://devsajjadali.github.io',
-  baseUrl: '/genvoris-docs/',
+  url: 'https://docs.genvoris.org',
+  baseUrl: '/',
 
   organizationName: 'devsajjadali',
   projectName: 'genvoris-docs',
