@@ -101,6 +101,6 @@ Every field on the `openTryOn(options)` argument is optional; missing values fal
 | --- | --- | --- |
 | `productImages` | `string[]` | Multiple reference shots improve quality for `apparel` and `object`. |
 | `productTitle` | `string` | Shown in the result card. |
-| `productCategory` | `'apparel' \| 'home' \| 'object' \| 'other'` | Routes the request to the right model (Vertex vs Imagen). |
+| `productCategory` | `'apparel' \| 'home' \| 'object' \| 'other'` | Routes the request to the appropriate try-on model on our side. |
 | `page_url` | `string` | Used for analytics + the `tryon.completed` webhook payload. |
 | `token` | `string` | Optional end-customer session JWT. Overrides `data-end-customer-token`. |

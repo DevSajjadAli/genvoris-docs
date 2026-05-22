@@ -38,11 +38,11 @@ The widget calls your try-on backend, which forwards to Genvoris:
 
 ```
 Browser  ──▶  Your try-on backend  ──▶  POST /api/tryon/track
-              (FastAPI / Node / etc)            x-internal-secret: ...
-                                                 api_key, end_customer_token, ...
+              (any server runtime)            Authorization: Bearer gvk_live_...
+                                                api_key, end_customer_token, ...
 ```
 
-`/api/tryon/track` is a server-to-server endpoint, **not** browser-callable. The `x-internal-secret` env shared between your try-on backend and the portal authenticates the call. If you're using our reference FastAPI backend, this is wired up for you.
+`/api/tryon/track` is a server-to-server endpoint, **not** browser-callable. The store API key in the `Authorization` header authenticates the call — keep it on your server only.
 
 ## Request body — `POST /api/tryon/track`
 
@@ -84,7 +84,7 @@ Browser  ──▶  Your try-on backend  ──▶  POST /api/tryon/track
 
 | HTTP | `error` | When |
 | --- | --- | --- |
-| 401 | `unauthorized` | Bad `x-internal-secret` |
+| 401 | `unauthorized` | Missing or malformed `Authorization` header |
 | 401 | `invalid_key` | Bad API key |
 | 401 | `invalid_session_token` | JWT failed verification or expired |
 | 402 | `credit_limit_reached` | Your store's credit pool empty |

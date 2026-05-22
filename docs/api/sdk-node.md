@@ -32,7 +32,7 @@ const gv = new Genvoris({
 | Option | Default | Notes |
 | --- | --- | --- |
 | `apiKey` | (required) | `gvk_live_…` or `gvk_test_…`. |
-| `baseUrl` | `https://api.genvoris.org` | Override for self-hosted / staging. |
+| `baseUrl` | `https://api.genvoris.org` | Override for staging or a custom egress proxy. |
 | `timeoutMs` | `30_000` | Per-request `AbortController`. |
 | `maxRetries` | `3` | 429 / 5xx with exponential backoff + jitter. |
 | `fetch` | `globalThis.fetch` | Inject `undici` / mocks if needed. |

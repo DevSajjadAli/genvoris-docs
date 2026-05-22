@@ -9,8 +9,7 @@ description: How we keep your store and your customers safe.
 ## Auth
 
 - **Store API keys** are 24-byte random tokens, hashed with SHA-256 at rest, prefixed for visual identification (`gvk_live_…`). We never store the plaintext after issuance.
-- **Session tokens** are RS256 JWTs with 15-minute default lifetime. Public key published as JWKS for offline verification.
-- **Try-on backend ↔ portal** uses a constant-time-compared shared secret (`x-internal-secret`).
+- **Session tokens** are RS256 JWTs with 15-minute default lifetime. Public key published as JWKS (`https://genvoris.org/.well-known/jwks.json`) for offline verification by your own code or plugins.
 
 ## Data we hold
 
@@ -20,8 +19,8 @@ description: How we keep your store and your customers safe.
 
 We do **not** hold:
 
-- Payment instruments — Paddle is Merchant of Record for L1; your billing system handles L2.
-- Try-on imagery — generation happens in the model backend; we keep only counts and timing.
+- Payment instruments — L1 (store ↔ Genvoris) is handled by a regulated Merchant-of-Record provider; L2 (shopper ↔ your store) is handled entirely by your own billing system.
+- Try-on imagery — generated photos and uploaded selfies are not retained; we keep only counts, sizes, and timing.
 
 ## Domain whitelisting
 
@@ -33,4 +32,4 @@ All endpoints are HTTPS-only with HSTS (`max-age=63072000; includeSubDomains; pr
 
 ## Reporting a vulnerability
 
-Email **support@genvoris.org**. Please do not file public GitHub issues for security topics. We respond within 48 hours and run a coordinated disclosure timeline.
+Email **support@genvoris.org**. Please do not disclose security topics in public forums. We respond within 48 hours and run a coordinated disclosure timeline.

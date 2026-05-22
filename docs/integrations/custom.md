@@ -10,7 +10,7 @@ If you're not on Shopify / WooCommerce yet, this is the recipe.
 
 ## 1. Listen for subscription events in your billing system
 
-Hook your Stripe/Paddle/etc. webhook for `subscription.created` and `subscription.renewed`. On either event, upsert a Genvoris customer:
+Hook your own billing webhooks (Stripe, Chargebee, anything) for `subscription.created` and `subscription.renewed`. On either event, upsert a Genvoris customer:
 
 ```ts
 import fetch from 'node-fetch'
