@@ -87,7 +87,7 @@ Default lifetime is 15 minutes. Inject the token into your page template alongsi
 The Genvoris widget on your storefront simply attaches the token in the request to the try-on backend (which then forwards it to us as `end_customer_token`):
 
 ```html
-<script src="https://cdn.genvoris.org/widget.js" defer
+<script src="https://api.genvoris.org/widget.js" defer
   data-api-key="gvk_live_xxxxxxxx"
   data-end-customer-token="eyJhbGciOi..."></script>
 ```

@@ -9,7 +9,7 @@ description: No build step. One script tag + a button.
 ```html
 <button id="tryon" data-image="https://shop.example.com/dress.jpg">Try it on</button>
 
-<script src="https://cdn.genvoris.org/widget.js"
+<script src="https://api.genvoris.org/widget.js"
         data-api-key="gvk_pub_xxx"
         defer></script>
 <script>

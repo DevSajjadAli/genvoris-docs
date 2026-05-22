@@ -50,7 +50,7 @@ add_action('rest_api_init', function () {
 
 // Front-end glue.
 add_action('wp_footer', function () { ?>
-  <script src="https://cdn.genvoris.org/widget.js"
+  <script src="https://api.genvoris.org/widget.js"
           data-api-key="<?php echo esc_attr(get_option('genvoris_publishable_key')); ?>"
           defer></script>
   <script>

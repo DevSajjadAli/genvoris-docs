@@ -77,7 +77,7 @@ app.get('/product/:slug', async (req, res) => {
 
 ```html
 <script
-  src="https://cdn.genvoris.org/widget.js"
+  src="https://api.genvoris.org/widget.js"
   defer
   data-api-key="<%= process.env.GENVORIS_PUBLIC_KEY %>"
   data-end-customer-token="<%= tryonToken %>"
