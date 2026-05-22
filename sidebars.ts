@@ -64,6 +64,7 @@ const sidebars: SidebarsConfig = {
         'integrations/custom',
         'integrations/shopify',
         'integrations/wordpress',
+        'integrations/laravel',
       ],
     },
     'security',
