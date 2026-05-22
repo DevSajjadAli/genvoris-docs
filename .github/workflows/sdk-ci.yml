@@ -1,0 +1,57 @@
+name: SDK CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'sdk/genvoris-node/**'
+      - '.github/workflows/sdk-ci.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'sdk/genvoris-node/**'
+      - '.github/workflows/sdk-ci.yml'
+
+jobs:
+  build-and-test:
+    name: Build & Test SDK (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: sdk/genvoris-node/package-lock.json
+
+      - name: Install dependencies
+        working-directory: sdk/genvoris-node
+        run: npm ci
+
+      - name: Type check
+        working-directory: sdk/genvoris-node
+        run: npm run build:check
+
+      - name: Build (CJS + ESM + types)
+        working-directory: sdk/genvoris-node
+        run: npm run build
+
+      - name: Run tests
+        working-directory: sdk/genvoris-node
+        run: npm test
+
+      - name: Verify package contents
+        working-directory: sdk/genvoris-node
+        run: |
+          npm pack --dry-run
+          echo "---"
+          echo "dist/ contents:"
+          ls -la dist/

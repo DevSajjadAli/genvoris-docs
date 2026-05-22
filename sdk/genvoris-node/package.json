@@ -1,0 +1,60 @@
+{
+  "name": "@genvoris/node",
+  "version": "1.0.0",
+  "description": "Official Genvoris Node.js SDK for virtual try-on API",
+  "license": "MIT",
+  "author": "Genvoris <support@genvoris.org>",
+  "homepage": "https://docs.genvoris.org/sdk/node",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DevSajjadAli/genvoris-docs.git",
+    "directory": "sdk/genvoris-node"
+  },
+  "bugs": {
+    "email": "support@genvoris.org",
+    "url": "https://github.com/DevSajjadAli/genvoris-docs/issues"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig.esm.json",
+    "build:check": "tsc --noEmit",
+    "lint": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build:check && npm run test && npm run build"
+  },
+  "keywords": [
+    "genvoris",
+    "virtual-try-on",
+    "vton",
+    "ecommerce",
+    "ai",
+    "fashion",
+    "shopify",
+    "woocommerce",
+    "sdk"
+  ],
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0",
+    "@types/node": "^20.11.0"
+  }
+}

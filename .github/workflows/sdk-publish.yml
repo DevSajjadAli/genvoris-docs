@@ -1,0 +1,88 @@
+name: Publish SDK to npm
+
+on:
+  push:
+    tags:
+      - 'sdk-v*'
+
+permissions:
+  contents: write   # create GitHub Release
+  id-token: write   # npm provenance attestation
+
+jobs:
+  publish:
+    name: Build, Test & Publish @genvoris/node
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+          cache-dependency-path: sdk/genvoris-node/package-lock.json
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          TAG="${{ github.ref_name }}"
+          VERSION="${TAG#sdk-v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Publishing version: $VERSION"
+
+      - name: Verify package.json version matches tag
+        working-directory: sdk/genvoris-node
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          TAG_VERSION="${{ steps.version.outputs.version }}"
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::package.json version ($PKG_VERSION) does not match tag ($TAG_VERSION). Bump package.json before tagging."
+            exit 1
+          fi
+          echo "Version match confirmed: $PKG_VERSION"
+
+      - name: Install dependencies
+        working-directory: sdk/genvoris-node
+        run: npm ci
+
+      - name: Type check
+        working-directory: sdk/genvoris-node
+        run: npm run build:check
+
+      - name: Build (CJS + ESM + types)
+        working-directory: sdk/genvoris-node
+        run: npm run build
+
+      - name: Run tests
+        working-directory: sdk/genvoris-node
+        run: npm test
+
+      - name: Publish to npm (public, with provenance)
+        working-directory: sdk/genvoris-node
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "@genvoris/node v${{ steps.version.outputs.version }}"
+          body: |
+            ## @genvoris/node v${{ steps.version.outputs.version }}
+
+            Install:
+
+            ```bash
+            npm install @genvoris/node
+            ```
+
+            See [CHANGELOG.md](https://github.com/DevSajjadAli/genvoris-docs/blob/main/sdk/genvoris-node/CHANGELOG.md) and [docs.genvoris.org](https://docs.genvoris.org/sdk/node) for details.
+
+            This release is published with [npm provenance](https://docs.npmjs.com/generating-provenance-statements) — verify the build at the workflow run linked above.
+          draft: false
+          prerelease: false

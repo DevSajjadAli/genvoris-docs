@@ -1,0 +1,14 @@
+src/
+test/
+tsconfig*.json
+vitest.config.*
+.eslintrc*
+.prettierrc*
+.editorconfig
+.gitignore
+.github/
+*.test.ts
+*.test.js
+coverage/
+node_modules/
+RELEASING.md
