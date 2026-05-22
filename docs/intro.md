@@ -22,13 +22,13 @@ Genvoris flips the model:
 - **Genvoris** enforces the quota, tracks usage, and bills you only for what was actually consumed.
 
 ```
-End-customer pays Adidas (Stripe)         ← Adidas's billing
+End-customer pays the store (any billing provider)   ← store's billing
        ↓
-Adidas backend → Genvoris (mint session)  ← server-to-server, store API key
+Store backend → Genvoris (mint session)              ← server-to-server, store API key
        ↓
-End-customer browser → Widget → Genvoris  ← short-lived JWT
+End-customer browser → Widget → Genvoris             ← short-lived JWT
        ↓
-Genvoris debits Adidas pool + meters customer
+Genvoris debits the store's credit pool + meters the end-customer
 ```
 
 ## Two layers

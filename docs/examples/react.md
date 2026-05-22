@@ -1,7 +1,7 @@
 ---
 sidebar_position: 4
 title: React hook
-description: Framework-agnostic useTryOn() hook for CRA / Vite / Remix / etc.
+description: Framework-agnostic useTryOn() hook for CRA / Vite / any React app.
 ---
 
 # React: `useTryOn()`

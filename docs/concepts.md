@@ -58,8 +58,8 @@ You can verify these tokens yourself by fetching `https://genvoris.org/.well-kno
 Each end-customer has a rolling 30-day period (`periodStart`, `periodEnd`). On every successful try-on:
 
 ```
-EndCustomer.usage[currentPeriod].tryOnsUsed += 1
-Store.creditPool                            -= 1   (FIFO)
+end-customer.usage[currentPeriod].tryOnsUsed += 1
+store.creditPool                              -= 1   (FIFO)
 ```
 
 When `tryOnsUsed >= plan.monthlyTryOns`, further try-ons return:
