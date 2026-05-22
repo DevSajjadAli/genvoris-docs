@@ -1,18 +1,194 @@
 ---
 sidebar_position: 3
-title: WordPress / WooCommerce (coming soon)
-description: Drop-in plugin for WooCommerce stores.
+title: WordPress / WooCommerce
+description: Native WordPress plugin — connect with one click, pick a monetisation model, no theme edits.
 ---
 
-# WordPress / WooCommerce (coming soon)
+# WordPress / WooCommerce
 
-The Genvoris plugin for WordPress + WooCommerce is in development. Expected features:
+The **Genvoris Virtual Try-On** WordPress plugin turns the universal REST flow described in [Custom integration](./custom) into a one-click connect for any WooCommerce store. It handles OAuth, widget injection, monetisation, per-customer quota, payments, and WooCommerce Subscriptions hooks — you choose how shoppers pay.
 
-- WordPress.org plugin install.
-- Settings page to paste your store API key + map plan ↔ Woo subscription product.
-- Automatic webhook handling for `woocommerce_subscription_status_*` events.
-- A Gutenberg block + shortcode (`[genvoris_tryon]`) for product templates.
+> Listing: [WordPress.org → Genvoris Virtual Try-On](https://wordpress.org/plugins/genvoris-virtual-try-on/) (in review)
+>
+> Source: [`alibinzulfiqar/genvoris-wordpress`](https://github.com/alibinzulfiqar/genvoris-wordpress)
 
-Until then, see the [custom integration](./custom) page — the REST API works the same on WordPress.
+## What it gives you
 
-> Want early access? Email **integrations@genvoris.org**.
+- **One-click connect** from the plugin's settings page. The "Connect with Genvoris" button OAuth-bridges your site to genvoris.org and writes the API key + webhook secret back encrypted — no copy/paste of secrets.
+- **No theme edits.** The widget injects itself into WooCommerce product pages via `woocommerce_after_single_product`. Optional Gutenberg block + shortcode (`[genvoris_tryon]`) for custom layouts.
+- **Five monetisation models** (pick one in `WooCommerce → Genvoris Try-On → Monetization`):
+
+  | Model | What the shopper does |
+  | --- | --- |
+  | `FREE_ALL` | Tries on freely. Merchant absorbs the cost. Optional guest mode. |
+  | `SUBSCRIPTION` | Buys a WooCommerce Subscriptions product → unlimited try-ons while active. |
+  | `CREDITS_WITH_PURCHASE` | Each paid WC order grants N try-on credits (configurable expiry). |
+  | `PAY_PER_USE` | Pays per try-on via a one-off WC checkout that grants a time-boxed session. |
+  | `FREEMIUM` | First N/month free; afterwards a paid subscription product. |
+- **Same-origin REST proxy** for storefront calls — every widget request goes through `/wp-json/genvoris/v1/proxy/*` on your domain, so the API key never leaves the server.
+- **Two-layer accounting** — the plugin debits your Genvoris store credit pool *and* meters per-shopper quota inside the local DB.
+- **Encrypted secrets at rest** — API key + webhook secret stored in `wp_options` under AES-256-CBC keyed by `AUTH_KEY + SECURE_AUTH_KEY`.
+- **HPOS / custom-order-tables compatible.** Uses the WooCommerce high-level order API — no direct `wp_postmeta` queries.
+
+## Install
+
+1. From `Plugins → Add New`, search **Genvoris Virtual Try-On** and click **Install** → **Activate**. (Or upload `genvoris-virtual-try-on.zip` from the [release page](https://github.com/alibinzulfiqar/genvoris-wordpress/releases).)
+2. Go to **WooCommerce → Genvoris Try-On → General**.
+3. Click **Connect with Genvoris** and authorise on genvoris.org. You'll bounce back to `admin.php?page=genvoris-settings&oauth_token=…&state=…`; the plugin exchanges the token for an API key + webhook secret and stores them encrypted.
+4. Open **Monetization**, pick a model, save. For `FREEMIUM` and `SUBSCRIPTION` you map an existing WooCommerce Subscriptions product (the plugin doesn't auto-create products on WP — Woo's product catalogue is the source of truth).
+5. (Optional) Open **Widget** to tweak placement, button text, and whether the floating button appears on product pages.
+
+That's it. Visit any product page on your storefront — the widget loads and behaves according to your chosen model.
+
+## Requirements
+
+| | Minimum | Tested up to |
+| --- | --- | --- |
+| WordPress | 6.0 | 6.9 |
+| PHP | 8.0 | 8.3 |
+| WooCommerce | 7.0 | 9.5 |
+| WooCommerce Subscriptions | (only for `SUBSCRIPTION` / `FREEMIUM`) | 6.x |
+
+The plugin **refuses to load without WooCommerce active**. Subscriptions is only required if you pick a model that needs it.
+
+## Storefront request flow
+
+```
+Product page
+       │
+       │  GET /wp-json/genvoris/v1/status?product_id=…
+       ▼  (cookie auth + X-WP-Nonce, same-origin)
+WordPress (Genvoris_Rest_Status)
+       │
+       │  Resolves Woo customer + monetisation model,
+       │  ensures EndCustomer at portal, calls:
+       ▼
+genvoris.org /api/v1/customers/{id}/usage
+       │
+       ▼
+JSON: {canTryOn, ctaType, remaining, sessionToken, …}
+       │
+       ▼
+Widget chooses one of:
+ • Show "Try On" button       (canTryOn = true)
+ • Redirect to WC checkout    (PAY_PER_USE)
+ • Show upgrade banner        (FREEMIUM exhausted)
+ • Show "Subscribe" link      (SUBSCRIPTION not active)
+       │
+       ▼
+On click: POST /wp-json/genvoris/v1/proxy/api/analyze
+          POST /wp-json/genvoris/v1/proxy/api/tryon
+       │  (same-origin proxy — WordPress injects X-API-Key
+       │   server-side; browser never sees the key)
+       ▼
+api.genvoris.org → returns generated image
+```
+
+Every storefront request is **same-origin** and authenticated with a `wp_rest` nonce. Guests get a generic status payload without a nonce; only logged-in customers can mint a session token or call the proxy.
+
+## REST endpoints (added by the plugin)
+
+All under `/wp-json/genvoris/v1/`. Server-to-server only — none expose the API key.
+
+| Method + path | Purpose | Auth |
+| --- | --- | --- |
+| `GET /status` | Quota + CTA snapshot for the current viewer. | Cookie + nonce (guest fallback). |
+| `POST /session` | Mint a 15-minute Genvoris session token for the current customer. | Cookie + nonce. |
+| `POST /credits/use` | Decrement local credits *before* the upstream try-on call (rolled back on non-2xx). | Cookie + nonce. |
+| `POST /checkout` | Build the WC draft order for `PAY_PER_USE`. | Cookie + nonce. |
+| `POST /proxy/{path}` | Forward to `api.genvoris.org/{path}` with the encrypted API key. | Cookie + nonce + admin allowlist for non-public paths. |
+| `GET /nonce` | Cheap nonce refresh for long-lived widgets. | Cookie. |
+| `POST /oauth/callback` | One-shot exchange for the OAuth `token + state`. | Admin (`manage_woocommerce`). |
+
+## WooCommerce hooks
+
+Subscriptions, orders, refunds, and customer lifecycle are wired through `Genvoris_Hooks`:
+
+| Action | Behaviour |
+| --- | --- |
+| `woocommerce_subscription_status_active` | Set `is_subscribed=1` on the local customer row. |
+| `woocommerce_subscription_status_cancelled` / `_expired` / `_on-hold` | Clear `is_subscribed`. |
+| `woocommerce_order_status_completed` | For `CREDITS_WITH_PURCHASE`, grant `credits_per_order` to the buyer with optional expiry. |
+| `woocommerce_order_refunded` | Roll back credits or revoke `PAY_PER_USE` sessions for the refunded order. |
+| `delete_user` | Detach the local row (kept for audit; can be hard-purged via uninstall). |
+
+The plugin also receives webhooks **from** Genvoris (`end_customer.quota_exhausted`, `plan.updated`, etc.) at `/wp-json/genvoris/v1/webhook`, verified with HMAC-SHA256 via `Genvoris_Security::verify_webhook()` (constant-time `hash_equals` + 5-minute clock-skew window). See [the standard webhook format](../api/webhooks#signature-header).
+
+Idempotency: every Genvoris event id is recorded in `wp_genvoris_processed_events`. Replays are no-ops.
+
+## Two-layer credit accounting
+
+```
+L1   Site ↔ Genvoris portal
+     • Merchant buys credit packs / subscription on genvoris.org
+     • Every try-on debits the site's pool via /api/tryon/track
+     • If exhausted → portal returns 402 → widget shows "service paused"
+
+L2   Shopper ↔ Site (this plugin)
+     • Each model defines its own per-shopper quota
+     • /wp-json/genvoris/v1/credits/use atomically decrements before /api/tryon
+     • Decrement is rolled back if /api/tryon returns non-2xx
+     • 402 end_customer_quota → widget shows the model-appropriate UX
+```
+
+Both layers are checked **before** any AI quota is spent.
+
+## Data sent to Genvoris
+
+Disclosed verbatim in the plugin's `readme.txt` under `== External services ==`:
+
+| When | Endpoint | Data |
+| --- | --- | --- |
+| OAuth (once, on connect) | `genvoris.org/oauth/wordpress` | site URL, site name, admin email, state, return URL, platform=`wordpress`, plugin version. |
+| Status check (per page view) | `genvoris.org/api/v1/customers/{id}/usage` | customer id (`wp_<user_id>`), optional email, metadata (`source: wordpress`, `wp_user_id`, `site_url`). |
+| Try-on (per shopper interaction) | `api.genvoris.org/api/analyze`, `/api/tryon` | uploaded photo bytes, product reference (id / title / image URL / page URL), API key (server-side header only). |
+
+WordPress passwords, payment details, and order line items are **never** sent.
+
+## Security model
+
+The plugin's audit checklist (WordPress.org submission gate) covers:
+
+- **Encrypted secrets** — `Genvoris_Security` encrypts the API key + webhook secret with AES-256-CBC keyed off `AUTH_KEY + SECURE_AUTH_KEY` salts. Raw secrets never hit disk in plaintext.
+- **Capability checks** — every admin POST runs through `ADMIN_CAP` (`manage_woocommerce`).
+- **Nonce verification** — every admin form has `wp_nonce_field()` + `check_admin_referer()`. REST mutations require `X-WP-Nonce` in addition to cookie auth.
+- **HMAC-verified webhooks** — incoming Genvoris webhooks use constant-time `hash_equals` with a clock-skew window.
+- **Prepared SQL** — every direct query uses `$wpdb->prepare`. Uninstall's `DROP TABLE` interpolates a literal `$wpdb->prefix` only.
+- **No `eval`, no remote PHP, no obfuscation** — `base64_*` is used only to encode the binary IV+ciphertext blob, documented inline.
+- **Rate limiting** — `Genvoris_Credits::rate_limit_ok()` caps `/status` at 120/min and `/session` at 30/min per IP+user.
+
+Rotating the WordPress salts (`AUTH_KEY` / `SECURE_AUTH_KEY`) invalidates every encrypted secret and forces a re-connect — coordinate before rotating.
+
+## Uninstall
+
+Plugin **deactivation** keeps everything (so you can re-enable without losing customer state).
+
+Plugin **uninstall** (the red "Delete" link under Plugins) runs `uninstall.php` which drops:
+
+- All `genvoris_*` options (model, config, encrypted secrets, widget settings, OAuth state).
+- All `genvoris_*` transients.
+- The `{$wpdb->prefix}genvoris_customers`, `{$wpdb->prefix}genvoris_credits`, `{$wpdb->prefix}genvoris_processed_events` tables.
+
+This is idempotent — re-running on an already-clean DB is a no-op.
+
+## Self-hosting / forking
+
+The source ships under GPLv2-or-later. Fork [`alibinzulfiqar/genvoris-wordpress`](https://github.com/alibinzulfiqar/genvoris-wordpress) and:
+
+1. Repoint `Genvoris_Api::PORTAL_BASE` and `BACKEND_BASE` constants to your own portal + backend.
+2. Adjust the OAuth redirect target in `class-genvoris-auth.php`.
+3. Rebuild the zip (`bash scripts/build-zip.sh` or `Compress-Archive`) — there is no build step for JS/CSS, every asset shipped is the original source per WP.org rules.
+
+See [`WORDPRESS_ORG_SUBMISSION.md`](https://github.com/alibinzulfiqar/genvoris-wordpress/blob/main/WORDPRESS_ORG_SUBMISSION.md) in the repo for the full submission checklist and SVN release commands.
+
+## Limits & caveats
+
+- **WooCommerce is required.** The plugin will refuse to load without it; the try-on flow keys off `WC_Customer` and `WC_Order`.
+- **WordPress.org review is in flight** — until approval, install via the GitHub release zip.
+- **WooCommerce Subscriptions** is a paid Automattic plugin. The `SUBSCRIPTION` and `FREEMIUM` models depend on it. `CREDITS_WITH_PURCHASE`, `PAY_PER_USE`, and `FREEMIUM` (credits side) work with vanilla WC.
+- WordPress site users are **not** Clerk users on the Genvoris side. They live as rows in `{$wpdb->prefix}genvoris_customers` locally and as `EndCustomer` rows (`externalId: wp_<user_id>`) in the portal.
+- Rotating WordPress salts invalidates every stored secret — every site would have to re-connect. Don't rotate without a coordinated migration.
+
+## Support
+
+Open an issue at [`alibinzulfiqar/genvoris-wordpress`](https://github.com/alibinzulfiqar/genvoris-wordpress/issues) or email **support@genvoris.org**.
