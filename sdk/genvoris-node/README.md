@@ -26,7 +26,7 @@ const session = await gv.sessions.mint({
 });
 
 // Hand `session.token` to the widget on the storefront:
-//   <script src="https://cdn.genvoris.org/widget.js"
+//   <script src="https://api.genvoris.org/widget.js"
 //           data-api-key="gvk_live_xxx"
 //           data-end-customer-token="<server-rendered>"></script>
 ```

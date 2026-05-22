@@ -20,7 +20,7 @@ If you installed the [Genvoris Shopify app](../integrations/shopify), this is do
   Try it on
 </button>
 
-<script src="https://cdn.genvoris.org/widget.js"
+<script src="https://api.genvoris.org/widget.js"
         data-api-key="{{ settings.genvoris_publishable_key }}"
         defer></script>
 

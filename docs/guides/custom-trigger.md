@@ -12,7 +12,7 @@ The drop-in `widget.js` script publishes a small global API (`window.Genvoris`) 
 
 ```html
 <script
-  src="https://cdn.genvoris.org/widget.js"
+  src="https://api.genvoris.org/widget.js"
   defer
   data-api-key="gvk_live_xxxxxxxx"
 ></script>

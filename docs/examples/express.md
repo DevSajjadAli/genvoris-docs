@@ -94,7 +94,7 @@ app.listen(3000);
 Browser side:
 
 ```html
-<script src="https://cdn.genvoris.org/widget.js"
+<script src="https://api.genvoris.org/widget.js"
         data-api-key="gvk_live_xxx"
         defer></script>
 <button id="tryon">Try it on</button>

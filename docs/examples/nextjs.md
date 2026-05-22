@@ -86,7 +86,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         {children}
         <Script
-          src="https://cdn.genvoris.org/widget.js"
+          src="https://api.genvoris.org/widget.js"
           data-api-key={process.env.NEXT_PUBLIC_GENVORIS_API_KEY}
           strategy="afterInteractive"
         />

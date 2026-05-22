@@ -18,7 +18,7 @@ Place this on any product page:
 </button>
 
 <script
-  src="https://cdn.genvoris.org/widget.js"
+  src="https://api.genvoris.org/widget.js"
   defer
   data-api-key="gvk_live_xxxxxxxx"
   data-end-customer-token="<%= sessionToken %>"
