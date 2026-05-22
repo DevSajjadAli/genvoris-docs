@@ -27,40 +27,18 @@ npm run serve
 - `docs/integrations/*.md` — Shopify / WordPress / custom recipes
 - `docs/security.md` — auth, data handling, vuln reporting
 
-## Installation
-
-```bash
-yarn
-```
-
-## Local Development
-
-```bash
-yarn start
-```
-
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-
-## Build
-
-```bash
-yarn build
-```
-
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
-
 ## Deployment
 
-Using SSH:
+The site is hosted at <https://docs.genvoris.org>. Push to `main` triggers a CI build that deploys the `build/` output. To deploy manually:
 
 ```bash
-USE_SSH=true yarn deploy
+npm run build
+# upload ./build to the static host (Cloudflare Pages, Netlify, etc.)
 ```
 
-Not using SSH:
+## Editing pages
 
-```bash
-GIT_USER=<Your GitHub username> yarn deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+- Source is plain Markdown with frontmatter.
+- Sidebar order lives in [`sidebars.ts`](./sidebars.ts).
+- Header / footer / nav config lives in [`docusaurus.config.ts`](./docusaurus.config.ts).
+- Each page has an `editUrl` pointing back at GitHub for the "Edit this page" footer link.
