@@ -33,4 +33,4 @@ All endpoints are HTTPS-only with HSTS (`max-age=63072000; includeSubDomains; pr
 
 ## Reporting a vulnerability
 
-Email **security@genvoris.org**. Please do not file public GitHub issues for security topics. We respond within 48 hours and run a coordinated disclosure timeline.
+Email **support@genvoris.org**. Please do not file public GitHub issues for security topics. We respond within 48 hours and run a coordinated disclosure timeline.

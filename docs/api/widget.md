@@ -96,3 +96,67 @@ Browser  ──▶  Your try-on backend  ──▶  POST /api/tryon/track
 ## Custom widget UX
 
 You can build your own widget — call your backend, which calls `/api/tryon/track`. The Genvoris widget script is convenience; the API is the contract.
+
+## Programmatic trigger — `window.Genvoris`
+
+Once `widget.js` has loaded it publishes a small global API. Use this when you want to open the modal from your own button, your own React component, or in response to a non-click event (URL hash, modal close, etc).
+
+```js
+window.Genvoris.openTryOn({
+  productImages: ['/img/dress-front.jpg', '/img/dress-back.jpg'],
+  productTitle: 'Black Wrap Dress',
+  productCategory: 'apparel',           // 'apparel' | 'home' | 'object' | 'other'
+  page_url: window.location.href,
+  token: optionalSessionJwt,            // overrides data-end-customer-token
+});
+```
+
+All fields are optional. When omitted the widget falls back to the values declared on the loader `<script>` tag.
+
+### Declarative attribute — `data-genvoris-trigger`
+
+Any element with `data-genvoris-trigger` becomes a try-on button. Per-button overrides go on the same element via `data-*` attributes:
+
+```html
+<button
+  data-genvoris-trigger
+  data-product-image="/img/dress.jpg"
+  data-product-title="Black Wrap Dress"
+  data-product-category="apparel"
+>
+  Try it on
+</button>
+```
+
+The widget binds at load time **and** watches for late-mounted DOM (SPA routing, AJAX-rendered collection grids) via `MutationObserver`, so dynamically inserted triggers are picked up automatically without you calling any `init()` function.
+
+### `productImages` vs `data-product-image`
+
+- Use `productImages` (array) in JS, or repeat `data-product-image` on multiple attributes, when you want to give the model several reference shots. This dramatically improves results for `apparel` and `object` categories.
+- A single `data-product-image` is fine for hero images.
+
+## Public widget config endpoint
+
+The portal exposes a public read-only endpoint that the widget script calls on boot to fetch the merchant's Button Designer choices (label, icon, border-radius, etc):
+
+```
+GET https://api.genvoris.org/api/widget/button-design?key=<your-api-key>
+```
+
+The response is safe to expose — it contains no secrets, only display preferences. It is cached for 60 seconds at the edge and falls back to defaults when the key is unknown so a misconfigured site never breaks.
+
+```json
+{
+  "data": {
+    "label": "Try On",
+    "icon": "sparkles",
+    "borderRadius": 8,
+    "fontSize": 14,
+    "paddingX": 20,
+    "paddingY": 10,
+    "position": "inline",
+    "showOnCards": false
+  }
+}
+```
+

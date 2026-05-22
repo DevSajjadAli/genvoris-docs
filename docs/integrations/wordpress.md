@@ -116,6 +116,14 @@ The plugin also receives webhooks **from** Genvoris (`end_customer.quota_exhaust
 
 Idempotency: every Genvoris event id is recorded in `wp_genvoris_processed_events`. Replays are no-ops.
 
+### Quick Try-On on collection cards
+
+Enable the **Quick Try-On on cards** checkbox in *Genvoris → Widget settings* to add a compact circular icon button to every product card on Shop / category / tag / product-archive pages.
+
+The icon is wired via the `woocommerce_after_shop_loop_item` hook (priority 15) and rendered by `Genvoris_Widget::render_quick_try_button()`. On click, the front-end (`public/assets/genvoris-quick-try.js`) calls `GET /wp-json/wc/v3/products/<id>?_fields=images` with the visitor's `X-WP-Nonce` and then `window.Genvoris.openTryOn({ productImages, page_url })`. Any failure — REST disabled, nonce stale, product has no images, or the widget bundle hasn't loaded yet — falls back to navigating to `productUrl?genvoris_tryon=1`. On the destination product page, `genvoris-loader.js` reads the flag and auto-opens the modal once the bundle resolves, then strips the flag from the URL via `history.replaceState`.
+
+The behaviour is off by default; enabling it has zero impact on product-page rendering.
+
 ## Two-layer credit accounting
 
 ```

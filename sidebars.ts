@@ -27,8 +27,33 @@ const sidebars: SidebarsConfig = {
         'api/customers',
         'api/sessions',
         'api/widget',
+        'api/button-design',
         'api/webhooks',
         'api/errors',
+        'api/sdk-node',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Examples',
+      collapsed: false,
+      items: [
+        'examples/index',
+        'examples/express',
+        'examples/nextjs',
+        'examples/react',
+        'examples/vue',
+        'examples/vanilla',
+        'examples/shopify-liquid',
+        'examples/woocommerce',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Guides',
+      collapsed: false,
+      items: [
+        'guides/custom-trigger',
       ],
     },
     {
