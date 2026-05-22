@@ -6,10 +6,17 @@ description: TypeScript reference for @genvoris/node.
 
 # `@genvoris/node` reference
 
-The official Node SDK is a thin typed wrapper around the REST API with built-in retries, timeouts, and webhook signature verification.
+:::info SDK coming soon
+The `@genvoris/node` package is **not yet published to npm**. The reference below documents the planned interface.
+
+**Use the REST API directly in the meantime** — the [Express example](../examples/express) and [Next.js example](../examples/nextjs) show working `fetch`-based patterns you can copy today.
+:::
+
+The official Node SDK will be a thin typed wrapper around the REST API with built-in retries, timeouts, and webhook signature verification.
 
 ```bash
-npm install @genvoris/node
+# Not yet available — watch this page for the release announcement.
+# npm install @genvoris/node
 ```
 
 Requires Node.js **&gt;= 18** (uses the built-in `fetch`).
