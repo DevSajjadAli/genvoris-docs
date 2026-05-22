@@ -32,6 +32,23 @@ Place this on any product page:
 
 If you omit `data-end-customer-token`, the widget runs in **legacy mode**: every try-on debits your credit pool with no per-customer accounting.
 
+## Subresource Integrity (recommended)
+
+The unversioned `widget.js` URL above always serves the latest build. For high-trust storefronts, pin a specific build and verify it with [SRI](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity) so a compromised CDN cannot silently swap your widget for hostile code:
+
+```html
+<script
+  src="https://api.genvoris.org/widget-1.4.2.js"
+  integrity="sha384-REPLACE_WITH_PUBLISHED_HASH"
+  crossorigin="anonymous"
+  defer
+  data-api-key="gvk_live_xxxxxxxx"
+  data-end-customer-token="<%= sessionToken %>"
+></script>
+```
+
+The current pinned URL and its SHA-384 integrity hash are published in the [release notes](https://github.com/genvoris/widget/releases) for every widget version. Rotate this hash with every version bump — a stale `integrity=""` will block widget loads. The `crossorigin="anonymous"` attribute is required for the browser to perform integrity checks on cross-origin scripts.
+
 ## Underlying flow
 
 The widget calls your try-on backend, which forwards to Genvoris:

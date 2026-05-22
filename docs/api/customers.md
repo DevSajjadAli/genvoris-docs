@@ -30,7 +30,23 @@ POST /customers
 | `externalId` | string | yes | **Your** stable id. Unique per store — re-POSTing upserts and rolls the period forward. |
 | `email` | string | no | Optional, for your reporting |
 | `planId` | string | no | Plan id; unset = no quota = every try-on returns 402 |
-| `metadata` | object | no | Free-form JSON, returned on read |
+| `metadata` | object | no | Free-form JSON, returned on read. Max 20 keys, 4 KB total; values must be string / number / boolean / null. |
+
+:::warning Bind `externalId` to a server-verified identity
+
+`externalId` is the **only** thing the widget uses to attribute a try-on to a customer. If your client-side code lets the user pick or send an arbitrary `externalId`, a logged-in attacker can mint a session for any other customer's id and burn their quota (or worse, get a session attributed to them).
+
+**Always** derive `externalId` server-side from a session you already trust. For example:
+
+```ts
+// in your authenticated backend handler
+const externalId = `shopify_${verifiedShopifyCustomerId}`  // ✓ trusted
+// NOT: const externalId = req.body.externalId             // ✗ attacker-controlled
+```
+
+For Shopify use the App Proxy `logged_in_customer_id` query param; for WordPress use `wp_get_current_user()->ID`; for your own auth, use the user id from the validated session cookie / JWT.
+
+:::
 
 The endpoint is **idempotent** — call it on every subscribe / renew without checking existence first.
 

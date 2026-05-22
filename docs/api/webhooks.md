@@ -8,6 +8,14 @@ description: Real-time outbound events with HMAC-SHA256 signing and exponential-
 
 Genvoris pushes lifecycle and quota events to your backend in real time. Configure endpoints in **Dashboard → Webhooks**. Each endpoint has its own signing secret (shown once at creation).
 
+:::danger Signature verification is REQUIRED
+
+You **MUST** verify the `X-Genvoris-Signature` header before processing any webhook payload. Skipping verification lets an attacker forge events (fake quota grants, fake cancellations, fake customer creates) by `POST`ing to your public webhook URL — this is a **critical** security vulnerability.
+
+The verification snippets below use `timingSafeEqual` / `hash_equals` for constant-time comparison and a 300-second timestamp window for replay protection. Do not skip either step.
+
+:::
+
 ## Events
 
 | Event | Fires when |
