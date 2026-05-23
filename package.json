@@ -12,6 +12,7 @@
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
+    "build:social-card": "node scripts/build-social-card.mjs",
     "typecheck": "tsc"
   },
   "dependencies": {

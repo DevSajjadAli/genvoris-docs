@@ -49,8 +49,11 @@ const config: Config = {
   ],
 
   themeConfig: {
-    // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    // Site-wide Open Graph / Twitter card. SVG so it stays crisp on
+    // high-DPI thumbnails; LinkedIn / Twitter / Slack scrapers all
+    // accept SVG. Replace per-page via frontmatter `image:` if a
+    // specific page needs a custom card.
+    image: 'img/genvoris-social-card.svg',
     colorMode: {
       respectPrefersColorScheme: true,
     },

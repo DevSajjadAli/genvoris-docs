@@ -49,9 +49,8 @@ Genvoris debits the store's credit pool + meters the end-customer
 
 | Integration | Status | Docs |
 | --- | --- | --- |
-| Shopify (native app) | **Live** in App Store review | [Shopify integration →](./integrations/shopify) |
-| WooCommerce | Planned | — |
-| Magento | Planned | — |
+| Shopify (native app) | App built — App Store listing in review | [Shopify integration →](./integrations/shopify) |
+| WordPress / WooCommerce | **Live** in the WordPress Plugin Directory | [WordPress integration →](./integrations/wordpress) |
 | Anything else (custom REST) | Always available | [Custom integration →](./integrations/custom) |
 
 The universal REST flow under [API reference](./api/authentication) works on every stack — the drop-in integrations above are just convenience wrappers around the same endpoints.
