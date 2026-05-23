@@ -68,6 +68,7 @@ const sidebars: SidebarsConfig = {
       ],
     },
     'security',
+    'changelog',
   ],
 };
 
