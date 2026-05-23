@@ -19,6 +19,19 @@ const sidebars: SidebarsConfig = {
     'concepts',
     {
       type: 'category',
+      label: 'Monetization models',
+      collapsed: false,
+      items: [
+        'monetization-models/index',
+        'monetization-models/free-for-all',
+        'monetization-models/pay-per-tryon',
+        'monetization-models/freemium',
+        'monetization-models/subscription',
+        'monetization-models/purchase-unlock',
+      ],
+    },
+    {
+      type: 'category',
       label: 'API reference',
       collapsed: false,
       items: [
