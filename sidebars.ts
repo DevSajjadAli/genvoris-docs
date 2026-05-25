@@ -36,6 +36,7 @@ const sidebars: SidebarsConfig = {
       collapsed: false,
       items: [
         'api/authentication',
+        'api/status-shape',
         'api/plans',
         'api/customers',
         'api/sessions',
@@ -68,6 +69,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'guides/custom-trigger',
         'guides/auto-style',
+        'guides/performance-budget',
       ],
     },
     {
