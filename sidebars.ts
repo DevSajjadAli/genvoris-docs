@@ -67,6 +67,7 @@ const sidebars: SidebarsConfig = {
       collapsed: false,
       items: [
         'guides/custom-trigger',
+        'guides/auto-style',
       ],
     },
     {
