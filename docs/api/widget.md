@@ -29,6 +29,7 @@ Place this on any product page:
 | --- | --- | --- |
 | `data-api-key` | yes | Your Genvoris store key, also enforced server-side |
 | `data-end-customer-token` | optional | Session JWT — when present, per-customer quota is enforced |
+| `data-language` | optional | Force a UI language (`en`, `ar`, `fr`, `de`, `es`, `ur`). Auto-detected from `<html lang>` when omitted |
 
 If you omit `data-end-customer-token`, the widget runs in **legacy mode**: every try-on debits your credit pool with no per-customer accounting.
 
@@ -151,6 +152,55 @@ The widget binds at load time **and** watches for late-mounted DOM (SPA routing,
 
 - Use `productImages` (array) in JS, or repeat `data-product-image` on multiple attributes, when you want to give the model several reference shots. This dramatically improves results for `apparel` and `object` categories.
 - A single `data-product-image` is fine for hero images.
+
+## Accessibility
+
+The widget ships WCAG-minded defaults so the try-on flow is usable with a keyboard and a screen reader:
+
+- Every interactive element exposes an `aria-label`; the trigger button is a real `<button>` and is reachable in the tab order.
+- Opening the modal **traps focus** inside it; <kbd>Tab</kbd> / <kbd>Shift+Tab</kbd> cycle within the dialog and never leak to the page behind it.
+- <kbd>Esc</kbd> closes the modal and returns focus to the element that opened it.
+- A visible focus ring is rendered on every control (it inherits your `--gv-focus` color when auto-style detection is active).
+- Selecting a file is announced to assistive technology via an `aria-live` region, so non-sighted shoppers hear the upload progress and the result state.
+
+If you build a custom trigger, keep it a focusable, labelled control (a `<button>`, not a `<div>`) so these guarantees hold end to end.
+
+## Languages & RTL
+
+The widget bundles its translations \u2014 there is **no extra network request** for locale strings. Supported languages:
+
+| Code | Language | Direction |
+| --- | --- | --- |
+| `en` | English | LTR |
+| `fr` | French | LTR |
+| `de` | German | LTR |
+| `es` | Spanish | LTR |
+| `ar` | Arabic | **RTL** |
+| `ur` | Urdu | **RTL** |
+
+The language is auto-detected from `document.documentElement.lang` (the `<html lang="\u2026">` attribute). Override it explicitly with `data-language` on the loader script or per-trigger element:
+
+```html
+<script
+  src="https://api.genvoris.org/widget.js"
+  defer
+  data-api-key="gvk_live_xxxxxxxx"
+  data-language="ar"
+></script>
+```
+
+For `ar` and `ur` the widget switches its internal layout to **right-to-left** automatically \u2014 it sets `dir=\"rtl\"` on its own root container, so you do not need to change anything on the host page. All spacing, icons, and the progress flow mirror correctly.
+
+## Performance
+
+The widget is built to stay out of your Core Web Vitals budget:
+
+- The script is **&lt; 50&nbsp;KB gzipped** and loads with `defer`, so it never blocks first paint.
+- The trigger button is injected **&lt; 100&nbsp;ms** after `DOMContentLoaded`; the modal opens **&lt; 50&nbsp;ms** after a click.
+- Auto-style detection runs **once per session** and caches the resolved `--gv-*` values, so repeat clicks do no extra work.
+- Heavy work (image upload, AI generation) happens only after an explicit click, never on page load.
+
+See the [Performance budget guide](../guides/performance-budget.md) for how to measure the widget's Lighthouse impact on your own theme.
 
 ## Public widget config endpoint
 

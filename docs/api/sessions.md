@@ -48,6 +48,37 @@ Response:
 
 If the customer is paused or cancelled, you get `403 customer_inactive` and no token.
 
+## Revoke a session
+
+If an end-customer logs out, or a token is suspected compromised, revoke it
+immediately by its `jti` claim. The token is rejected even though its
+signature and `exp` are otherwise still valid.
+
+```http
+DELETE /api/v1/customers/{customerId}/sessions/{jti}
+Authorization: Bearer <store_api_key>
+```
+
+Response:
+
+```json
+{ "data": { "jti": "ec_abc-1745811445-rand", "revoked": true } }
+```
+
+Notes:
+
+- **Idempotent** — revoking an already-revoked `jti` returns `200`.
+- The `jti` must belong to a token issued for one of your own customers
+  (it is prefixed with the customer ID); otherwise you get `404 not_found`.
+- Revocation entries are retained only until the token's natural expiry
+  (max session lifetime is 1 hour), then pruned automatically.
+
+SDK example (`@genvoris/node`):
+
+```ts
+await genvoris.sessions.revoke({ customerId: 'ec_abc', jti });
+```
+
 ## Token shape
 
 ```
@@ -85,6 +116,10 @@ Cache-Control: public, max-age=3600
 ```
 
 Use any JOSE library (Node `jose`, Python `python-jose`, PHP `firebase/php-jwt`) to verify with `iss=https://genvoris.org` and `aud=genvoris-widget`.
+
+> Offline verification cannot see revocations. If you revoke tokens, either
+> keep `expires_in` short (the default 15 min bounds your exposure) or verify
+> online against the widget API for security-sensitive actions.
 
 ## Rotation
 
