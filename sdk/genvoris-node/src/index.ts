@@ -1,66 +1,73 @@
+import type { GenvorisConfig } from './types.js';
+import { CustomersResource } from './resources/customers.js';
+import { PlansResource } from './resources/plans.js';
+import { SessionsResource } from './resources/sessions.js';
+import { WebhooksResource } from './resources/webhooks.js';
+
+// Re-export error classes for named imports
+export {
+  GenvorisAPIError,
+  GenvorisAuthError,
+  GenvorisRateLimitError,
+  GenvorisValidationError,
+} from './errors.js';
+
+// Re-export WebhooksResource for static `verify` usage
+export { WebhooksResource } from './resources/webhooks.js';
+
+// Re-export all public types
+export type { GenvorisConfig } from './types.js';
+export type {
+  CustomerCreateParams,
+  CustomerUpdateParams,
+  CustomerListParams,
+  Customer,
+  CustomerList,
+  CustomerUsage,
+  CustomerSession,
+  CustomerSessionList,
+} from './resources/customers.js';
+export type {
+  PlanCreateParams,
+  PlanUpdateParams,
+  PlanListParams,
+  Plan,
+  PlanList,
+} from './resources/plans.js';
+export type { SessionMintParams, MintedSession } from './resources/sessions.js';
+export type {
+  WebhookCreateParams,
+  WebhookVerifyOptions,
+  WebhookEndpoint,
+  WebhookEndpointList,
+  GenvorisEvent,
+} from './resources/webhooks.js';
+
 /**
- * Public entry point. Mirrors the layout of the Stripe SDK:
+ * Official Genvoris Node.js SDK client.
  *
- *   import Genvoris from '@genvoris/node';
- *   const gv = new Genvoris({ apiKey: process.env.GENVORIS_API_KEY! });
- *   await gv.customers.list();
+ * @example
+ * ```ts
+ * import Genvoris from '@genvoris/node';
  *
- * Named imports work too for tree-shaking:
+ * const gv = new Genvoris({ apiKey: process.env.GENVORIS_API_KEY! });
  *
- *   import { GenvorisClient, GenvorisAPIError } from '@genvoris/node';
+ * const session = await gv.sessions.mint({ customerId: 'ec_abc' });
+ * ```
  */
+export default class Genvoris {
+  readonly customers: CustomersResource;
+  readonly plans: PlansResource;
+  readonly sessions: SessionsResource;
+  readonly webhooks: WebhooksResource;
 
-import { HttpClient } from './client';
-import { ClientOptions } from './types';
-import { CustomersResource } from './resources/customers';
-import { PlansResource } from './resources/plans';
-import { SessionsResource } from './resources/sessions';
-import { TryOnResource } from './resources/tryon';
-import { WebhooksResource } from './resources/webhooks';
-
-export class GenvorisClient {
-  public readonly customers: CustomersResource;
-  public readonly plans: PlansResource;
-  public readonly sessions: SessionsResource;
-  public readonly tryon: TryOnResource;
-  /** Static-only namespace for webhook signature verification. */
-  public readonly webhooks: typeof WebhooksResource = WebhooksResource;
-
-  constructor(opts: ClientOptions) {
-    const http = new HttpClient(opts);
-    this.customers = new CustomersResource(http);
-    this.plans = new PlansResource(http);
-    this.sessions = new SessionsResource(http);
-    this.tryon = new TryOnResource(http);
+  constructor(config: GenvorisConfig) {
+    if (!config?.apiKey) {
+      throw new Error('Genvoris: apiKey is required');
+    }
+    this.customers = new CustomersResource(config);
+    this.plans = new PlansResource(config);
+    this.sessions = new SessionsResource(config);
+    this.webhooks = new WebhooksResource(config);
   }
 }
-
-export {
-  GenvorisError,
-  GenvorisAuthError,
-  GenvorisAPIError,
-  GenvorisWebhookError,
-} from './errors';
-export { WebhooksResource } from './resources/webhooks';
-export type {
-  ClientOptions,
-  Customer,
-  CreateCustomerInput,
-  UpdateCustomerInput,
-  Plan,
-  CreatePlanInput,
-  UpdatePlanInput,
-  Session,
-  MintSessionInput,
-  AnalyzeInput,
-  AnalyzeResult,
-  GenerateInput,
-  TryOnResult,
-  WebhookEvent,
-  WebhookEventType,
-  ProductCategory,
-  PaginationParams,
-  ListResult,
-} from './types';
-
-export default GenvorisClient;

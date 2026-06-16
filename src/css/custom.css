@@ -1,30 +1,278 @@
 /**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
+ * Genvoris Docs — brand-theme CSS.
+ *
+ * Colour palette derived from the Genvoris portal brand:
+ *   Navy    #0B0F1A → #0F172B   (backgrounds / surfaces)
+ *   Gold    #F0B429 → #FCD34D   (primary accent, CTAs, links)
+ *   Green   #3ECC5F / #44D860   (logo, secondary accent, success)
+ *   Slate   #94A3B8 / #E2E8F0   (muted text, borders)
+ *
+ * Typography: Inter (UI), JetBrains Mono (code) — matching the social card.
  */
 
-/* You can override the default Infima variables here. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  /* ── Primary: Gold ──────────────────────────────
+     Light mode uses a darker gold for accessible contrast */
+  --ifm-color-primary: #b8920e;
+  --ifm-color-primary-dark: #a37e0c;
+  --ifm-color-primary-darker: #8b6b0a;
+  --ifm-color-primary-darkest: #6b5208;
+  --ifm-color-primary-light: #d4a428;
+  --ifm-color-primary-lighter: #e0b33c;
+  --ifm-color-primary-lightest: #edc660;
+
+  /* ── Brand accents ───────────────────────────── */
+  --ifm-link-color: #7a5c0f;
+  --ifm-link-hover-color: #5c430b;
+  --ifm-color-success: #2ea84b; /* darker green for light bg */
+
+  /* ── Type ─────────────────────────────────────── */
+  --ifm-font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
+  --ifm-font-family-monospace: 'JetBrains Mono', ui-monospace, 'SF Mono', 'Fira Code', monospace;
+  --ifm-font-size-base: 16px;
+  --ifm-code-font-size: 90%;
+
+  /* ── Backgrounds / surfaces ──────────────────── */
+  --ifm-background-color: #ffffff;
+  --ifm-background-surface-color: #f8fafc;
+
+  /* ── Text ─────────────────────────────────────── */
+  --ifm-font-color-base: #0f172b;
+  --ifm-font-color-secondary: #475569;
+  --ifm-heading-color: #0f172b;
+  --ifm-hero-text-color: #0f172b;
+
+  /* ── Navbar ───────────────────────────────────── */
+  --ifm-navbar-background-color: rgba(255, 255, 255, 0.92);
+  --ifm-navbar-link-color: #475569;
+  --ifm-navbar-link-hover-color: #7a5c0f;
+  --ifm-navbar-link-active-color: #7a5c0f;
+
+  /* ── Sidebar / menu ──────────────────────────── */
+  --ifm-menu-color: #475569;
+  --ifm-menu-color-active: #7a5c0f;
+  --ifm-menu-color-background-active: rgba(122, 92, 15, 0.06);
+
+  /* ── Borders / dividers ──────────────────────── */
+  --ifm-toc-border-color: #e2e8f0;
+  --ifm-table-border-color: #e2e8f0;
+  --ifm-table-stripe-background: #f8fafc;
+
+  /* ── Cards ────────────────────────────────────── */
+  --ifm-card-background-color: #ffffff;
+
+  /* ── Code ──────────────────────────────────────── */
+  --ifm-code-background: #f1f5f9;
+  --ifm-pre-background: #0f172a;
+
+  /* ── Dropdowns ────────────────────────────────── */
+  --ifm-dropdown-background-color: #ffffff;
+
+  /* ── Alerts / callouts ───────────────────────── */
+  --ifm-color-info: #2563eb;
+  --ifm-color-warning: #d97706;
+  --ifm-color-danger: #dc2626;
+
+  /* ── Misc ──────────────────────────────────────── */
+  --ifm-hover-overlay: rgba(15, 23, 42, 0.05);
+  --ifm-scrollbar-track-bg: transparent;
+  --ifm-scrollbar-thumb-bg: #cbd5e1;
+  --ifm-global-shadow-lw: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --ifm-global-shadow-md: 0 4px 10px rgba(15, 23, 42, 0.1);
+  --ifm-global-shadow-tl: 0 12px 28px rgba(15, 23, 42, 0.12);
+  --docusaurus-highlighted-code-line-bg: rgba(183, 146, 14, 0.1);
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
+/* ────────────────────────────────────────────────────
+   DARK MODE
+   Follows the portal's navy/gold/green identity.
+   ──────────────────────────────────────────────────── */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  /* ── Primary: Gold ────────────────────────────── */
+  --ifm-color-primary: #f0b429;
+  --ifm-color-primary-dark: #daa01e;
+  --ifm-color-primary-darker: #c48e14;
+  --ifm-color-primary-darkest: #a6760a;
+  --ifm-color-primary-light: #f2c04a;
+  --ifm-color-primary-lighter: #f5cb65;
+  --ifm-color-primary-lightest: #f8d889;
+
+  /* ── Brand accents ───────────────────────────── */
+  --ifm-link-color: #f0b429;
+  --ifm-link-hover-color: #f5cb65;
+  --ifm-color-success: #3ecc5f; /* portal green */
+
+  /* ── Backgrounds / surfaces ────────────────────
+     Navy gradient matching the portal social card */
+  --ifm-background-color: #0f172b;
+  --ifm-background-surface-color: #1e293b;
+
+  /* ── Text ─────────────────────────────────────── */
+  --ifm-font-color-base: #e2e8f0;
+  --ifm-font-color-secondary: #94a3b8;
+  --ifm-heading-color: #f1f5f9;
+  --ifm-hero-text-color: #ffffff;
+
+  /* ── Navbar ───────────────────────────────────── */
+  --ifm-navbar-background-color: rgba(15, 23, 43, 0.95);
+  --ifm-navbar-link-color: #94a3b8;
+  --ifm-navbar-link-hover-color: #f0b429;
+  --ifm-navbar-link-active-color: #f0b429;
+
+  /* ── Sidebar / menu ──────────────────────────── */
+  --ifm-menu-color: #94a3b8;
+  --ifm-menu-color-active: #f0b429;
+  --ifm-menu-color-background-active: rgba(240, 180, 41, 0.1);
+
+  /* ── Borders / dividers ──────────────────────── */
+  --ifm-toc-border-color: #334155;
+  --ifm-table-border-color: #334155;
+  --ifm-table-stripe-background: #1e293b;
+
+  /* ── Cards ────────────────────────────────────── */
+  --ifm-card-background-color: #1e293b;
+
+  /* ── Code ──────────────────────────────────────── */
+  --ifm-code-background: #1e293b;
+  --ifm-pre-background: #0b0f1a;
+
+  /* ── Dropdowns ────────────────────────────────── */
+  --ifm-dropdown-background-color: #1e293b;
+
+  /* ── Misc ──────────────────────────────────────── */
+  --ifm-hover-overlay: rgba(255, 255, 255, 0.05);
+  --ifm-scrollbar-thumb-bg: #475569;
+  --ifm-global-shadow-lw: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --ifm-global-shadow-md: 0 4px 10px rgba(0, 0, 0, 0.3);
+  --ifm-global-shadow-tl: 0 12px 28px rgba(0, 0, 0, 0.4);
+  --docusaurus-highlighted-code-line-bg: rgba(240, 180, 41, 0.12);
+
+  /* Invert sidebar collapse icon for dark nav */
+  --ifm-menu-link-sublist-icon-filter: invert(100%) sepia(0%) saturate(500%) hue-rotate(180deg) brightness(85%);
+}
+
+/* ────────────────────────────────────────────────────
+   NAVBAR refinements
+   ──────────────────────────────────────────────────── */
+.navbar {
+  border-bottom: 1px solid transparent;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+:root .navbar {
+  border-bottom-color: #e2e8f0;
+}
+
+[data-theme='dark'] .navbar {
+  border-bottom-color: #334155;
+}
+
+/* ────────────────────────────────────────────────────
+   SIDEBAR refinements
+   ──────────────────────────────────────────────────── */
+:root .menu__link--active {
+  font-weight: 600;
+}
+
+[data-theme='dark'] .menu__link--active {
+  font-weight: 600;
+}
+
+/* Add a thin gold left border on active sidebar items */
+.menu__link--active:not(.menu__link--sublist) {
+  border-left: 3px solid var(--ifm-color-primary);
+  padding-left: calc(var(--ifm-menu-link-padding-horizontal) - 3px);
+}
+
+/* ────────────────────────────────────────────────────
+   CODE blocks
+   ──────────────────────────────────────────────────── */
+:root .code-block-error-line {
+  background-color: rgba(220, 38, 38, 0.1);
+  display: block;
+  margin: 0 calc(-1 * var(--ifm-pre-padding));
+  padding: 0 var(--ifm-pre-padding);
+  border-left: 3px solid #dc2626;
+}
+
+/* ────────────────────────────────────────────────────
+   TABLE of contents
+   ──────────────────────────────────────────────────── */
+.table-of-contents__link:hover,
+.table-of-contents__link:hover code {
+  color: var(--ifm-link-hover-color);
+}
+
+.table-of-contents__link--active,
+.table-of-contents__link--active code {
+  color: var(--ifm-color-primary-darker);
+  font-weight: 600;
+}
+
+/* ────────────────────────────────────────────────────
+   PAGINATION
+   ──────────────────────────────────────────────────── */
+.pagination-nav__link:hover {
+  border-color: var(--ifm-color-primary);
+}
+
+/* ────────────────────────────────────────────────────
+   BREADCRUMBS
+   ──────────────────────────────────────────────────── */
+.breadcrumbs__item--active .breadcrumbs__link {
+  background: var(--ifm-color-primary);
+  color: #fff;
+}
+
+/* ────────────────────────────────────────────────────
+   FOOTER — always navy dark
+   ──────────────────────────────────────────────────── */
+.footer--dark,
+[data-theme='dark'] .footer {
+  --ifm-footer-background-color: #0b0f1a;
+  --ifm-footer-color: #94a3b8;
+  --ifm-footer-link-color: #cbd5e1;
+  --ifm-footer-title-color: #f1f5f9;
+}
+
+/* ────────────────────────────────────────────────────
+   SEARCH (if Algolia DocSearch is used)
+   ──────────────────────────────────────────────────── */
+[data-theme='dark'] .DocSearch {
+  --docsearch-searchbox-background: #1e293b;
+  --docsearch-searchbox-focus-background: #0f172b;
+  --docsearch-footer-background: #1e293b;
+  --docsearch-hit-background: #1e293b;
+  --docsearch-hit-active-color: #0f172b;
+  --docsearch-modal-background: #0f172b;
+}
+
+/* ────────────────────────────────────────────────────
+   ANIMATIONS — subtle, respecting prefers-reduced-motion
+   ──────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .navbar {
+    transition: background-color 200ms ease, border-color 200ms ease;
+  }
+  .menu__link {
+    transition: color 150ms ease, background-color 150ms ease, border-left-color 150ms ease;
+  }
+  .pagination-nav__link {
+    transition: border-color 200ms ease;
+  }
+}
+
+/* ────────────────────────────────────────────────────
+   RESPONSIVE tweaks
+   ──────────────────────────────────────────────────── */
+@media (max-width: 996px) {
+  :root .navbar {
+    --ifm-navbar-background-color: rgba(255, 255, 255, 0.98);
+  }
+  [data-theme='dark'] .navbar {
+    --ifm-navbar-background-color: rgba(15, 23, 43, 0.98);
+  }
 }

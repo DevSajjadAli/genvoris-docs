@@ -63,21 +63,50 @@ The signed string is `${t}.${rawRequestBody}`, HMAC-SHA256 with your endpoint se
 
 ### Verifying — Node
 
-```ts
-import { createHmac, timingSafeEqual } from 'crypto'
+#### With the SDK (recommended)
 
-function verify(secret: string, rawBody: string, header: string) {
-  const parts = Object.fromEntries(header.split(',').map(p => p.split('=').map(s => s.trim())))
-  const ts = parseInt(parts.t, 10)
-  if (Math.abs(Date.now() / 1000 - ts) > 300) return false   // 5-min tolerance
-  const expected = createHmac('sha256', secret).update(`${ts}.${rawBody}`).digest('hex')
-  const a = Buffer.from(expected, 'hex')
-  const b = Buffer.from(parts.v1, 'hex')
-  return a.length === b.length && timingSafeEqual(a, b)
+```ts
+import { WebhooksResource } from '@genvoris/node';
+
+const event = WebhooksResource.verify({
+  payload: req.body,           // Buffer of the raw request body
+  header: req.header('x-genvoris-signature') ?? '',
+  secret: process.env.GENVORIS_WEBHOOK_SECRET!,
+  toleranceSeconds: 300,       // optional, default 300
+});
+
+// event.type, event.id, event.created, event.data
+```
+
+The SDK handles parsing, timestamp validation, constant-time comparison, and byte-length guarding — see the [Node SDK reference](./sdk-node#webhook-verification).
+
+#### Manual implementation
+
+```ts
+import { createHmac, timingSafeEqual } from 'node:crypto';
+
+function verify(secret, rawBody, header) {
+  const parts = Object.fromEntries(
+    header.split(',').map(p => p.split('=').map(s => s.trim()))
+  );
+  const ts = parseInt(parts.t, 10);
+  if (Math.abs(Date.now() / 1000 - ts) > 300) return false;
+  const expected = createHmac('sha256', secret)
+    .update(`${ts}.${rawBody}`)
+    .digest('hex');
+  const a = Buffer.from(expected, 'hex');
+  const b = Buffer.from(parts.v1, 'hex');
+  return a.length === b.length && timingSafeEqual(a, b);
 }
 ```
 
 ### Verifying — PHP
+
+#### With the Laravel package (recommended)
+
+The `genvoris/laravel` package auto-verifies incoming webhooks via the `VerifyGenvorisWebhook` middleware — see the [Laravel integration docs](../integrations/laravel#webhooks). No manual code needed.
+
+#### Manual implementation
 
 ```php
 function gv_verify($secret, $rawBody, $header) {
