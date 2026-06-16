@@ -89,6 +89,7 @@ const config: Config = {
       logo: {
         alt: 'Genvoris',
         src: 'img/logo.svg',
+        srcDark: 'img/logo-dark.png',
       },
       items: [
         {

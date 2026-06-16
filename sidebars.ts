@@ -31,6 +31,13 @@ const sidebars: SidebarsConfig = {
         'api/button-design',
         'api/webhooks',
         'api/errors',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Node module',
+      collapsed: false,
+      items: [
         'api/sdk-node',
       ],
     },
