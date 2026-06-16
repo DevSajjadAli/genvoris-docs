@@ -7,7 +7,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'Genvoris Docs',
   tagline: 'Virtual try-on infrastructure for e-commerce',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.jpeg',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -80,12 +80,11 @@ const config: Config = {
     // high-DPI thumbnails; LinkedIn / Twitter / Slack scrapers all
     // accept SVG. Replace per-page via frontmatter `image:` if a
     // specific page needs a custom card.
-    image: 'img/genvoris-social-card.svg',
+    image: 'img/social-card.svg',
     colorMode: {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'Genvoris',
       logo: {
         alt: 'Genvoris',
         src: 'img/logo.svg',
