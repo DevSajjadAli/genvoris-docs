@@ -1,48 +1,62 @@
-/**
- * Error hierarchy. Consumers can `instanceof GenvorisAPIError` to
- * branch on HTTP failures vs network / shape errors. All errors carry
- * a stable `code` string so logic can branch without parsing messages.
- */
+export class GenvorisAPIError extends Error {
+  readonly status: number;
+  readonly code: string;
+  readonly requestId: string | undefined;
 
-export class GenvorisError extends Error {
-  public readonly code: string;
-  constructor(message: string, code = 'genvoris_error') {
-    super(message);
-    this.name = 'GenvorisError';
-    this.code = code;
+  constructor(args: {
+    status: number;
+    code: string;
+    message?: string;
+    requestId?: string;
+  }) {
+    super(args.message ?? args.code);
+    this.name = 'GenvorisAPIError';
+    this.status = args.status;
+    this.code = args.code;
+    this.requestId = args.requestId;
   }
 }
 
-export class GenvorisAuthError extends GenvorisError {
-  constructor(message = 'Invalid or missing API key.') {
-    super(message, 'auth_error');
+export class GenvorisAuthError extends GenvorisAPIError {
+  constructor(args: {
+    status: number;
+    code: string;
+    message?: string;
+    requestId?: string;
+  }) {
+    super(args);
     this.name = 'GenvorisAuthError';
   }
 }
 
-export class GenvorisAPIError extends GenvorisError {
-  public readonly status: number;
-  public readonly requestId?: string;
-  public readonly raw?: unknown;
+export class GenvorisRateLimitError extends GenvorisAPIError {
+  readonly retryAfterSeconds: number;
 
   constructor(args: {
-    message: string;
     status: number;
-    code?: string;
+    code: string;
+    message?: string;
     requestId?: string;
-    raw?: unknown;
+    retryAfterSeconds?: number;
   }) {
-    super(args.message, args.code ?? `http_${args.status}`);
-    this.name = 'GenvorisAPIError';
-    this.status = args.status;
-    this.requestId = args.requestId;
-    this.raw = args.raw;
+    super(args);
+    this.name = 'GenvorisRateLimitError';
+    this.retryAfterSeconds = args.retryAfterSeconds ?? 60;
   }
 }
 
-export class GenvorisWebhookError extends GenvorisError {
-  constructor(message: string, code = 'webhook_error') {
-    super(message, code);
-    this.name = 'GenvorisWebhookError';
+export class GenvorisValidationError extends GenvorisAPIError {
+  readonly fieldErrors: Record<string, string[]>;
+
+  constructor(args: {
+    status: number;
+    code: string;
+    message?: string;
+    requestId?: string;
+    fieldErrors?: Record<string, string[]>;
+  }) {
+    super(args);
+    this.name = 'GenvorisValidationError';
+    this.fieldErrors = args.fieldErrors ?? {};
   }
 }

@@ -18,6 +18,56 @@ repositories — `genvoris-portal`, `genvoris-docs`, `genvoris-node`,
 
 ---
 
+## 2026-06-16 — Docs overhaul + SDK fixes
+
+### Documentation
+- All API reference docs cross-checked against actual source code for accuracy.
+- **[Node SDK reference](./api/sdk-node)** — complete rewrite: decorated jitter (not full jitter),
+  all missing methods documented (`cancel`, `usage`, `sessions`, `revoke`, `archive`, `delete`, `test`),
+  fresh `AbortController` per retry detailed, webhook verify example uses canonical header name.
+- **[Laravel integration](./integrations/laravel)** — comprehensive update: full config table,
+  resource method signatures, security features of the proxy (method whitelist, path traversal guard,
+  origin enforcement, 502 handling), complete event table with descriptions, idempotency details,
+  error class hierarchy, testing section, dedicated webhook verification section.
+- **[Webhook docs](./api/webhooks)** — verification examples now reference the SDK's built-in
+  `WebhooksResource.verify()` and the Laravel package's auto-verifying middleware before showing
+  manual code. Node manual example uses `node:crypto` import path.
+- **[Changelog](./changelog)** — corrected `genvoris/laravel-sdk` → `genvoris/laravel`.
+  Added v1.0.1 release notes for `@genvoris/node`.
+- **Docusaurus config** — added Laravel integration to footer.
+- **Cross-doc linking** — consistent relative links throughout.
+
+### `@genvoris/node` v1.0.1
+- Fixed error-code/message fallback when the API returns empty-string fields.
+- Added `Accept: application/json` default header.
+- Added hex character validation in `hexToBytes()` for webhook verification.
+- Fixed webhook test payload `event` → `type` field name.
+- Added `@types/node` dev dependency; removed fragile custom crypto shims.
+- Pinned retry backoff to **decorated jitter** (`0.7 + random() * 0.6` spread)
+  for better de-correlation across concurrent clients.
+
+### `genvoris/laravel` v1.0.0
+- Initial Composer package for Laravel 10/11/12.
+- Service provider with config validation raised at boot
+  (not at first call) so misconfiguration fails loudly.
+- `CustomerResource`, `PlanResource`, `SessionResource` — resource-oriented API wrappers with
+  automatic `external_id_prefix` handling.
+- `HasGenvorisAccess` Eloquent trait for User models.
+- Facade with `upsertCustomer()`, `mintSession()`, `listPlans()`, `customerUsage()`.
+- `@genvorisWidget`, `@genvorisConfig`, `@genvorisScripts`, `@genvorisTryOnButton` Blade directives.
+- `ProxyController` — server-side proxy with path allowlist, origin enforcement, method whitelist.
+- `WebhookController` — HMAC-SHA256 verified webhook dispatch with typed Laravel events
+  (9 event classes), idempotency via `X-Genvoris-Delivery` dedup (24h window).
+- `VerifyGenvorisWebhook` middleware for automatic signature verification.
+- `WebhookVerifier` class (stateless, returns bool, never throws).
+- 5 Artisan commands: install, test-connection, list-plans, list-customers, webhook-test.
+- Optional polymorphic migration for local customer ID caching.
+- 40+ tests across unit and feature suites using Orchestra Testbench + PHPUnit.
+- Bug fixes: case-insensitive host comparison in proxy, null-safe `Cache::store()` guard,
+  204 handling in customer cancel, Content-Type header fix in webhook test command.
+
+---
+
 ## 2026-05-24 — SDKs
 
 ### `@genvoris/node` v1.0.0
@@ -26,10 +76,41 @@ repositories — `genvoris-portal`, `genvoris-docs`, `genvoris-node`,
   Webhooks REST endpoints.
 - Built-in JWT minting helper for short-lived widget sessions.
 
-### `genvoris/laravel-sdk` v1.0.0
+### `genvoris/laravel` v1.0.0 *(pre-release name: `genvoris/laravel-sdk`)*
 - Initial Composer package for Laravel 10/11/12.
-- `Genvoris\Client` service container resolution with config validation
-  raised at boot (not at first call) so misconfiguration fails loudly.
+- Service provider with config validation raised at boot (not at first call) so misconfiguration fails loudly.
+
+### `@genvoris/node` v1.0.0
+- Initial release of the official TypeScript/Node SDK on npm.
+- Promise-based client wrapping the Plans, Customers, Sessions and
+  Webhooks REST endpoints.
+- Built-in JWT minting helper for short-lived widget sessions.
+
+### `@genvoris/node` v1.0.1
+- Fixed error-code/message fallback when the API returns empty-string fields.
+- Added `Accept: application/json` default header.
+- Added hex character validation in `hexToBytes()` for webhook verification.
+- Fixed webhook test payload `event` → `type` field name.
+- Added `@types/node` dev dependency; removed fragile custom crypto shims.
+- Pinned retry backoff to **decorated jitter** (`0.7 + random() * 0.6` spread)
+  for better de-correlation across concurrent clients.
+
+### `genvoris/laravel` v1.0.0
+- Initial Composer package for Laravel 10/11/12.
+- Service provider with config validation raised at boot
+  (not at first call) so misconfiguration fails loudly.
+- `CustomerResource`, `PlanResource`, `SessionResource` — resource-oriented API wrappers with automatic `external_id_prefix` handling.
+- `HasGenvorisAccess` Eloquent trait for User models.
+- Facade with `upsertCustomer()`, `mintSession()`, `listPlans()`, `customerUsage()`.
+- `@genvorisWidget`, `@genvorisConfig`, `@genvorisScripts`, `@genvorisTryOnButton` Blade directives.
+- `ProxyController` — server-side proxy with path allowlist, origin enforcement, and method whitelist.
+- `WebhookController` — HMAC-SHA256 verified webhook dispatch with typed Laravel events (9 event classes).
+- `VerifyGenvorisWebhook` middleware for automatic signature verification.
+- `WebhookVerifier` class (stateless, returns bool, never throws).
+- 5 Artisan commands: install, test-connection, list-plans, list-customers, webhook-test.
+- Optional polymorphic migration for local customer ID caching.
+- Bug fixes: case-insensitive host comparison in proxy, null-safe `Cache::store()` guard,
+  204 handling in customer cancel, Content-Type header fix in webhook test command.
 
 ---
 

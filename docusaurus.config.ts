@@ -21,6 +21,33 @@ const config: Config = {
   organizationName: 'devsajjadali',
   projectName: 'genvoris-docs',
 
+  headTags: [
+    /* Google Fonts — Inter UI + JetBrains Mono (preconnect for perf) */
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'preconnect',
+        href: 'https://fonts.googleapis.com',
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'preconnect',
+        href: 'https://fonts.gstatic.com',
+        crossorigin: 'anonymous',
+      },
+    },
+    /* Gold accent bar for branded browser tabs (Chrome Android) */
+    {
+      tagName: 'meta',
+      attributes: {
+        name: 'theme-color',
+        content: '#f0b429',
+      },
+    },
+  ],
+
   onBrokenLinks: 'throw',
 
   // Even if you don't use internationalization, you can use this field to set
@@ -96,6 +123,7 @@ const config: Config = {
             {label: 'Quickstart', to: '/quickstart'},
             {label: 'Concepts', to: '/concepts'},
             {label: 'API reference', to: '/api/authentication'},
+            {label: 'Node SDK', to: '/api/sdk-node'},
             {label: 'Errors', to: '/api/errors'},
           ],
         },
@@ -103,6 +131,7 @@ const config: Config = {
           title: 'Integrations',
           items: [
             {label: 'Custom', to: '/integrations/custom'},
+            {label: 'Laravel', to: '/integrations/laravel'},
             {label: 'Shopify', to: '/integrations/shopify'},
             {label: 'WordPress', to: '/integrations/wordpress'},
           ],
@@ -117,11 +146,11 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `© ${new Date().getFullYear()} Genvoris. Payments processed by Paddle.com — Merchant of Record.`,
+      copyright: `© ${new Date().getFullYear()} Genvoris.`,
     },
     prism: {
       theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
+      darkTheme: prismThemes.oneDark,
     },
   } satisfies Preset.ThemeConfig,
 };
