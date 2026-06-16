@@ -1,5 +1,5 @@
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
+import { themes as prismThemes } from 'prism-react-renderer';
+import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
@@ -88,7 +88,7 @@ const config: Config = {
       logo: {
         alt: 'Genvoris',
         src: 'img/logo.svg',
-        srcDark: 'img/logo-dark.png',
+        srcDark: 'img/logo.svg',
       },
       items: [
         {
@@ -120,29 +120,29 @@ const config: Config = {
         {
           title: 'Docs',
           items: [
-            {label: 'Quickstart', to: '/quickstart'},
-            {label: 'Concepts', to: '/concepts'},
-            {label: 'API reference', to: '/api/authentication'},
-            {label: 'Node SDK', to: '/api/sdk-node'},
-            {label: 'Errors', to: '/api/errors'},
+            { label: 'Quickstart', to: '/quickstart' },
+            { label: 'Concepts', to: '/concepts' },
+            { label: 'API reference', to: '/api/authentication' },
+            { label: 'Node SDK', to: '/api/sdk-node' },
+            { label: 'Errors', to: '/api/errors' },
           ],
         },
         {
           title: 'Integrations',
           items: [
-            {label: 'Custom', to: '/integrations/custom'},
-            {label: 'Laravel', to: '/integrations/laravel'},
-            {label: 'Shopify', to: '/integrations/shopify'},
-            {label: 'WordPress', to: '/integrations/wordpress'},
+            { label: 'Custom', to: '/integrations/custom' },
+            { label: 'Laravel', to: '/integrations/laravel' },
+            { label: 'Shopify', to: '/integrations/shopify' },
+            { label: 'WordPress', to: '/integrations/wordpress' },
           ],
         },
         {
           title: 'Genvoris',
           items: [
-            {label: 'Dashboard', href: 'https://genvoris.org/sign-in'},
-            {label: 'Pricing', href: 'https://genvoris.org/pricing'},
-            {label: 'Refund Policy', href: 'https://genvoris.org/refund-policy'},
-            {label: 'Support', href: 'mailto:support@genvoris.org'},
+            { label: 'Dashboard', href: 'https://genvoris.org/sign-in' },
+            { label: 'Pricing', href: 'https://genvoris.org/pricing' },
+            { label: 'Refund Policy', href: 'https://genvoris.org/refund-policy' },
+            { label: 'Support', href: 'mailto:support@genvoris.org' },
           ],
         },
       ],
