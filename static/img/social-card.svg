@@ -1,0 +1,21 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#081225"/>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="980" cy="120" r="260" fill="#F0B429" fill-opacity="0.18"/>
+  <circle cx="220" cy="560" r="240" fill="#4F39F6" fill-opacity="0.18"/>
+  <rect x="72" y="72" width="1056" height="486" rx="36" fill="#0F172B" fill-opacity="0.78" stroke="#F0B429" stroke-opacity="0.32"/>
+  <text x="112" y="142" fill="#F0B429" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="800" letter-spacing="4">GENVORIS</text>
+  <text x="112" y="246" fill="#FFFFFF" font-family="Inter, Arial, sans-serif" font-size="68" font-weight="800">Virtual try-on</text>
+  <text x="112" y="326" fill="#F0B429" font-family="Inter, Arial, sans-serif" font-size="68" font-weight="800">on your terms</text>
+  <text x="112" y="397" fill="#CBD5E1" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="500">Free, paid, freemium, subscription, or purchase-unlock.</text>
+  <text x="112" y="445" fill="#CBD5E1" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="500">Five monetization models. One try-on layer.</text>
+  <rect x="112" y="488" width="430" height="1" fill="#F0B429" fill-opacity="0.5"/>
+  <text x="112" y="525" fill="#94A3B8" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="600">genvoris.org</text>
+  <defs>
+    <radialGradient id="bg" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(820 80) rotate(132) scale(850 680)">
+      <stop stop-color="#152A5A"/>
+      <stop offset="0.55" stop-color="#0D1B3E"/>
+      <stop offset="1" stop-color="#081225"/>
+    </radialGradient>
+  </defs>
+</svg>
