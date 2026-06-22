@@ -4,6 +4,18 @@ All notable changes to `@genvoris/node` are documented here. The format
 follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-06-23
+
+### Added
+- First-class widget analytics event ingestion via `gv.events.track()` and `gv.events.trackBatch()`.
+- Conversion attribution resource via `gv.conversions.create()`.
+- Return/refund analytics resource via `gv.returns.create()`.
+- Type exports for widget event, conversion, and return payloads.
+
+### Changed
+- Documentation now reinforces server-only live API key usage for hosted-widget integrations.
+- SDK user agent version updated for the relaunch package.
+
 ## [1.0.1] - 2026-06-16
 
 ### Fixed
@@ -38,6 +50,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Dual CommonJS + ESM build with `.d.ts` + declaration maps + source maps.
 - Zero runtime dependencies — uses the Node 18+ built-in `fetch`.
 
-[Unreleased]: https://github.com/DevSajjadAli/genvoris-docs/compare/sdk-v1.0.1...HEAD
+[Unreleased]: https://github.com/DevSajjadAli/genvoris-docs/compare/sdk-v1.1.0...HEAD
+[1.1.0]: https://github.com/DevSajjadAli/genvoris-docs/releases/tag/sdk-v1.1.0
 [1.0.1]: https://github.com/DevSajjadAli/genvoris-docs/releases/tag/sdk-v1.0.1
 [1.0.0]: https://github.com/DevSajjadAli/genvoris-docs/releases/tag/sdk-v1.0.0
