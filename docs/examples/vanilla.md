@@ -9,8 +9,11 @@ description: No build step. One script tag + a button.
 ```html
 <button id="tryon" data-image="https://shop.example.com/dress.jpg">Try it on</button>
 
-<script src="https://api.genvoris.org/widget.js"
-        data-api-key="gvk_pub_xxx"
+<script src="https://api.genvoris.org/widget.js?no_fab=1"
+        data-api-url="/api/genvoris/proxy/"
+        data-events-url="/api/genvoris/proxy/api/v1/events"
+        data-platform="custom"
+        data-no-fab="true"
         defer></script>
 <script>
   document.querySelectorAll('[data-image]').forEach((btn) => {

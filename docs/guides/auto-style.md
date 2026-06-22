@@ -55,7 +55,10 @@ Use `data-border-radius="8"`, not `data-border-radius="8px"`. Trailing `px` is s
 
 ```html
 <script
-  src="https://api.genvoris.org/widget.js?key=gvk_live_xxxxxxxx"
+  src="https://api.genvoris.org/widget.js"
+  data-api-url="/genvoris-proxy/"
+  data-events-url="/genvoris-proxy/api/v1/events"
+  data-token="{{ sessionToken }}"
   data-primary-color="#0a1f44"
 ></script>
 ```
@@ -66,7 +69,10 @@ The widget will still detect your font, accent, background, text color, and corn
 
 ```html
 <script
-  src="https://api.genvoris.org/widget.js?key=gvk_live_xxxxxxxx"
+  src="https://api.genvoris.org/widget.js"
+  data-api-url="/genvoris-proxy/"
+  data-events-url="/genvoris-proxy/api/v1/events"
+  data-token="{{ sessionToken }}"
   data-auto-style="false"
   data-primary-color="#0a1f44"
   data-accent-color="#c9a96a"

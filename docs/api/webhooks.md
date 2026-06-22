@@ -20,15 +20,28 @@ The verification snippets below use `timingSafeEqual` / `hash_equals` for consta
 
 | Event | Fires when |
 | --- | --- |
-| `end_customer.created` | First time a customer is upserted via `POST /v1/customers` |
-| `end_customer.updated` | A customer is upserted again or `PATCH`'d |
-| `end_customer.cancelled` | A customer is `DELETE`'d (soft cancel) |
-| `end_customer.quota_warning` | Customer crosses **80%** of plan quota in current period (once per period) |
-| `end_customer.quota_exhausted` | A try-on was rejected for quota — fired even on the rejecting request |
-| `end_customer.period_rolled` | Period auto-rolled to a new 30-day window |
-| `plan.created` | A plan was created |
-| `plan.updated` | A plan was updated |
-| `plan.disabled` | A plan was soft-deleted |
+| `tryon.completed` | A try-on generation succeeds and usage/credit attribution is recorded. |
+| `tryon.failed` | A try-on request fails after validation or model execution. |
+| `customer.plan_changed` | A customer's assigned plan changes. |
+| `customer.quota_exhausted` | A try-on was rejected for quota — fired even on the rejecting request. |
+| `credit.low_balance` | Store credit balance crosses the configured low-balance threshold. |
+| `credit.balance_added` | Credits are purchased, granted, or otherwise added to the store balance. |
+
+### Legacy aliases
+
+Older integrations may still receive these aliases; new integrations should prefer the event names above.
+
+| Event | Fires when |
+| --- | --- |
+| `end_customer.created` | First time a customer is upserted via `POST /v1/customers`. |
+| `end_customer.updated` | A customer is upserted again or `PATCH`'d. |
+| `end_customer.cancelled` | A customer is `DELETE`'d (soft cancel). |
+| `end_customer.quota_warning` | Customer crosses **80%** of plan quota in current period (once per period). |
+| `end_customer.quota_exhausted` | Legacy alias for `customer.quota_exhausted`. |
+| `end_customer.period_rolled` | Period auto-rolled to a new 30-day window. |
+| `plan.created` | A plan was created. |
+| `plan.updated` | A plan was updated. |
+| `plan.disabled` | A plan was soft-deleted. |
 
 ## Payload shape
 
@@ -123,7 +136,7 @@ function gv_verify($secret, $rawBody, $header) {
 - **Timeout** per attempt: 10 s.
 - **Success**: any `2xx`.
 - **Retry on**: anything else, plus network errors.
-- **Backoff** (seconds): `10, 30, 120, 300, 900, 3600, 10800, 21600`.
+- **Backoff** (seconds): `10, 30, 120, 300, 900, 1800, 2700, 3600`.
 - **Max attempts**: 8. After that the delivery is marked `DEAD` and not retried again.
 - **Ordering**: not guaranteed. Use the envelope `id` for idempotency on your side.
 

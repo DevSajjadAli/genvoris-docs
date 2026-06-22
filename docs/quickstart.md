@@ -80,16 +80,22 @@ Response:
 }
 ```
 
-Default lifetime is 15 minutes. Inject the token into your page template alongside your widget snippet.
+Default lifetime is 15 minutes. Return the token to your page template or frontend route; do not return your merchant live API key.
 
 ## 5. Run a metered try-on
 
-The Genvoris widget on your storefront simply attaches the token in the request to the try-on backend (which then forwards it to us as `end_customer_token`):
+The Genvoris widget on your storefront attaches the token to requests sent through your same-origin backend proxy. The proxy forwards approved try-on/event paths to Genvoris and injects `GENVORIS_API_KEY` server-side:
 
 ```html
-<script src="https://api.genvoris.org/widget.js" defer
-  data-api-key="gvk_live_xxxxxxxx"
-  data-end-customer-token="eyJhbGciOi..."></script>
+<script
+  src="https://api.genvoris.org/widget.js?no_fab=1"
+  defer
+  data-api-url="/genvoris-proxy/"
+  data-events-url="/genvoris-proxy/api/v1/events"
+  data-token="eyJhbGciOi..."
+  data-platform="custom"
+  data-no-fab="true"
+></script>
 ```
 
 If the customer's quota is exhausted, the widget receives `402 end_customer_quota` and you can show your own paywall / upgrade flow.

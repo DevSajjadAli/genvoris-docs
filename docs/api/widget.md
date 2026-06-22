@@ -8,30 +8,43 @@ description: Drop-in widget script and the underlying try-on flow.
 
 The Genvoris widget lets your customers virtually try a product on with a single click. Server-side, every successful try-on debits your credit pool **and** the end-customer's per-period quota.
 
+:::danger Keep live API keys server-side
+Merchant live keys (`gvk_live_…`) must never be placed in HTML or browser JavaScript. Use a same-origin backend proxy that injects the key server-side, plus a short-lived customer session token for quota enforcement.
+:::
+
 ## Drop-in script
 
-Place this on any product page:
+Place this on any product page after your backend has minted a customer session token:
 
 ```html
-<button class="genvoris-tryon-btn" data-product-image="/img/dress.jpg">
+<button
+  data-genvoris-trigger
+  data-product-image="/img/dress.jpg"
+  data-product-title="Black Wrap Dress"
+>
   Virtual Try-on
 </button>
 
 <script
-  src="https://api.genvoris.org/widget.js"
+  src="https://api.genvoris.org/widget.js?no_fab=1"
   defer
-  data-api-key="gvk_live_xxxxxxxx"
-  data-end-customer-token="<%= sessionToken %>"
+  data-api-url="/genvoris-proxy/"
+  data-events-url="/genvoris-proxy/api/v1/events"
+  data-platform="custom"
+  data-token="<%= sessionToken %>"
+  data-no-fab="true"
 ></script>
 ```
 
 | Attribute | Required | Notes |
 | --- | --- | --- |
-| `data-api-key` | yes | Your Genvoris store key, also enforced server-side |
-| `data-end-customer-token` | optional | Session JWT — when present, per-customer quota is enforced |
-| `data-language` | optional | Force a UI language (`en`, `ar`, `fr`, `de`, `es`, `ur`). Auto-detected from `<html lang>` when omitted |
+| `data-api-url` | yes | Same-origin backend proxy base URL. The proxy forwards only approved try-on endpoints and injects your live API key on the server. |
+| `data-events-url` | recommended | Same-origin analytics endpoint, usually your proxy path plus `/api/v1/events`. |
+| `data-token` | recommended | Short-lived customer session JWT minted by your backend. Also accepted as `data-customer-token` / legacy `data-end-customer-token`. |
+| `data-platform` | optional | Integration label such as `shopify`, `wordpress`, `laravel`, or `custom`. |
+| `data-language` | optional | Force a UI language (`en`, `ar`, `fr`, `de`, `es`, `ur`). Auto-detected from `<html lang>` when omitted. |
 
-If you omit `data-end-customer-token`, the widget runs in **legacy mode**: every try-on debits your credit pool with no per-customer accounting.
+If you omit `data-token`, the widget can still open, but per-customer quota attribution is unavailable. The live merchant API key should still remain on your backend.
 
 ## Subresource Integrity (recommended)
 
@@ -39,12 +52,13 @@ The unversioned `widget.js` URL above always serves the latest build. For high-t
 
 ```html
 <script
-  src="https://api.genvoris.org/widget-1.4.2.js"
+  src="https://api.genvoris.org/widget-1.4.2.js?no_fab=1"
   integrity="sha384-REPLACE_WITH_PUBLISHED_HASH"
   crossorigin="anonymous"
   defer
-  data-api-key="gvk_live_xxxxxxxx"
-  data-end-customer-token="<%= sessionToken %>"
+  data-api-url="/genvoris-proxy/"
+  data-events-url="/genvoris-proxy/api/v1/events"
+  data-token="<%= sessionToken %>"
 ></script>
 ```
 
@@ -52,21 +66,21 @@ The current pinned URL and its SHA-384 integrity hash are published in the [rele
 
 ## Underlying flow
 
-The widget calls your try-on backend, which forwards to Genvoris:
+The widget calls your same-origin try-on backend/proxy, which forwards to Genvoris:
 
 ```
-Browser  ──▶  Your try-on backend  ──▶  POST /api/tryon/track
-              (any server runtime)            Authorization: Bearer gvk_live_...
-                                                api_key, end_customer_token, ...
+Browser  ──▶  Your same-origin proxy  ──▶  POST /api/tryon/track
+              (any server runtime)             Authorization: Bearer $GENVORIS_API_KEY
+                                                api_key/session token injected server-side
 ```
 
-`/api/tryon/track` is a server-to-server endpoint, **not** browser-callable. The store API key in the `Authorization` header authenticates the call — keep it on your server only.
+`/api/tryon/track` is a server-to-server endpoint, **not** directly browser-callable with a merchant live key. The store API key in the `Authorization` header authenticates the call — keep it on your server only.
 
 ## Request body — `POST /api/tryon/track`
 
 ```json
 {
-  "api_key": "gvk_live_xxxxxxxx",
+  "api_key": "$GENVORIS_API_KEY",
   "product_type": "apparel",
   "variation_count": 4,
   "generation_time_ms": 1820,
@@ -125,7 +139,7 @@ window.Genvoris.openTryOn({
   productTitle: 'Black Wrap Dress',
   productCategory: 'apparel',           // 'apparel' | 'home' | 'object' | 'other'
   page_url: window.location.href,
-  token: optionalSessionJwt,            // overrides data-end-customer-token
+  token: optionalSessionJwt,            // overrides data-token / data-customer-token
 });
 ```
 
@@ -184,7 +198,9 @@ The language is auto-detected from `document.documentElement.lang` (the `<html l
 <script
   src="https://api.genvoris.org/widget.js"
   defer
-  data-api-key="gvk_live_xxxxxxxx"
+  data-api-url="/genvoris-proxy/"
+  data-events-url="/genvoris-proxy/api/v1/events"
+  data-token="<%= sessionToken %>"
   data-language="ar"
 ></script>
 ```
@@ -207,10 +223,10 @@ See the [Performance budget guide](../guides/performance-budget.md) for how to m
 The portal exposes a public read-only endpoint that the widget script calls on boot to fetch the merchant's Button Designer choices (label, icon, border-radius, etc):
 
 ```
-GET https://api.genvoris.org/api/widget/button-design?key=<your-api-key>
+GET https://api.genvoris.org/api/widget/button-design?key=<public-widget-key-or-merchant-id>
 ```
 
-The response is safe to expose — it contains no secrets, only display preferences. It is cached for 60 seconds at the edge and falls back to defaults when the key is unknown so a misconfigured site never breaks.
+The response is safe to expose — it contains no secrets, only display preferences. Do not put a merchant live key in this URL; official integrations either call it from the hosted widget flow or proxy it with a public identifier. It is cached for 60 seconds at the edge and falls back to defaults when the key is unknown so a misconfigured site never breaks.
 
 ```json
 {

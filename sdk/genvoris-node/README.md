@@ -13,6 +13,7 @@ Node.js >= 18 is required (uses built-in `fetch`, `crypto`, and `AbortController
 ```ts
 import Genvoris from '@genvoris/node';
 
+// Server-side only. Never expose GENVORIS_API_KEY in browser code.
 const gv = new Genvoris({ apiKey: process.env.GENVORIS_API_KEY! });
 
 const customer = await gv.customers.create({
@@ -25,10 +26,8 @@ const session = await gv.sessions.mint({
   ttlSeconds: 3600,
 });
 
-// Hand `session.token` to the widget on the storefront:
-//   <script src="https://api.genvoris.org/widget.js"
-//           data-api-key="gvk_live_xxx"
-//           data-end-customer-token="<server-rendered>"></script>
+// Hand `session.token` to the widget on the storefront, alongside
+// same-origin proxy/event URLs. Do not render your live API key.
 ```
 
 ## Configuration
@@ -65,12 +64,24 @@ gv.plans.archive(id)
 gv.sessions.mint({ customerId, ttlSeconds? })    // default 900s, clamped [60, 3600]
 gv.sessions.revoke({ customerId, jti })
 
+// Events
+gv.events.track({ sessionId, eventType, productId?, productTitle?, pageUrl?, metadata? })
+gv.events.trackBatch([{ sessionId, eventType }])
+
+// Conversions and returns
+gv.conversions.create({ orderId, platform, amountCents, currency?, quantity?, productId?, sessionId? })
+gv.returns.create({ orderId, platform, refundedAmountCents, currency?, reason? })
+
 // Webhooks
 gv.webhooks.list()
 gv.webhooks.create({ url, secret, events, description? })
 gv.webhooks.test(id)
 gv.webhooks.delete(id)
 ```
+
+## Hosted widget integration
+
+Use this SDK from your backend to mint short-lived customer session tokens, record conversions/returns, and verify webhooks. For browser-hosted widgets, route try-on and analytics calls through your own same-origin endpoint or another approved public-widget flow; do not place `gvk_live_...` keys in HTML or client JavaScript.
 
 ## Webhook verification
 

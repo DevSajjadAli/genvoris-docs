@@ -87,7 +87,7 @@ The Shopify app subscribes to:
 | `customers/redact` | Privacy compliance — hard-delete the matching record. |
 | `shop/redact` | Privacy compliance — hard-delete every row tied to the shop. |
 
-The app also receives webhooks **from** Genvoris (`end_customer.quota_exhausted`, `plan.updated`, etc.) at the same `/webhooks` endpoint, signed with HMAC-SHA256 in [the standard format](../api/webhooks#signature-header).
+The app also receives webhooks **from** Genvoris (`tryon.completed`, `customer.quota_exhausted`, `credit.low_balance`, plus legacy aliases such as `end_customer.quota_exhausted`) at the same `/webhooks` endpoint, signed with HMAC-SHA256 in [the standard format](../api/webhooks#signature-header).
 
 Idempotency: every Shopify `webhook_id` and Genvoris event id is recorded internally — replays are no-ops.
 

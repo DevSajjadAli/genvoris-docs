@@ -80,7 +80,7 @@ app.post(
       case 'tryon.completed':
         // record usage in your DB
         break;
-      case 'customer.quota_exceeded':
+      case 'customer.quota_exhausted':
         // notify the customer
         break;
     }
@@ -94,9 +94,14 @@ app.listen(3000);
 Browser side:
 
 ```html
-<script src="https://api.genvoris.org/widget.js"
-        data-api-key="gvk_live_xxx"
-        defer></script>
+<script
+  src="https://api.genvoris.org/widget.js?no_fab=1"
+  data-api-url="/api/genvoris/proxy/"
+  data-events-url="/api/genvoris/proxy/api/v1/events"
+  data-platform="custom"
+  data-no-fab="true"
+  defer
+></script>
 <button id="tryon">Try it on</button>
 <script>
   document.getElementById('tryon').addEventListener('click', async () => {
@@ -105,5 +110,7 @@ Browser side:
   });
 </script>
 ```
+
+Keep `GENVORIS_API_KEY` in the Express process environment only. The `/api/genvoris/proxy/*` route should enforce a strict allowlist and inject that key server-side for widget try-on/event requests.
 
 See [Webhook events](../api/webhooks) for the full signature spec and event catalogue.
