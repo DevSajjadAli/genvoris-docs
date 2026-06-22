@@ -35,10 +35,10 @@ const session = await gv.sessions.mint({
 | Option | Default | Notes |
 | --- | --- | --- |
 | `apiKey` | (required) | Starts with `gvk_live_` or `gvk_test_`. |
-| `baseUrl` | `https://genvoris.org/api/v1` | Override for self-hosting / staging. |
+| `baseUrl` | Genvoris v1 API | Override for self-hosting / staging. |
 | `timeoutMs` | `30_000` | Per-request timeout via `AbortController` (fresh controller per retry). |
 | `maxRetries` | `3` | Retries on 429 / 5xx with exponential backoff + decorated jitter. |
-| `fetch` | `globalThis.fetch` | Provide your own (e.g. `undici`) if needed. |
+| `fetch` | Native Fetch API | Provide your own (e.g. `undici`) if needed. |
 | `defaultHeaders` | `{}` | Attached to every request. |
 
 ## Resources

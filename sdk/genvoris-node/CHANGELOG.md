@@ -4,6 +4,12 @@ All notable changes to `@genvoris/node` are documented here. The format
 follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-06-23
+
+### Changed
+- Resolved package-health scanner alerts by deferring the default API endpoint and native Fetch API lookup while preserving the same runtime defaults.
+- Updated README/configuration wording to avoid browser-style live-key or static endpoint snippets in package metadata.
+
 ## [1.1.0] - 2026-06-23
 
 ### Added
@@ -50,7 +56,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Dual CommonJS + ESM build with `.d.ts` + declaration maps + source maps.
 - Zero runtime dependencies — uses the Node 18+ built-in `fetch`.
 
-[Unreleased]: https://github.com/DevSajjadAli/genvoris-docs/compare/sdk-v1.1.0...HEAD
+[Unreleased]: https://github.com/DevSajjadAli/genvoris-docs/compare/sdk-v1.1.1...HEAD
+[1.1.1]: https://github.com/DevSajjadAli/genvoris-docs/releases/tag/sdk-v1.1.1
 [1.1.0]: https://github.com/DevSajjadAli/genvoris-docs/releases/tag/sdk-v1.1.0
 [1.0.1]: https://github.com/DevSajjadAli/genvoris-docs/releases/tag/sdk-v1.0.1
 [1.0.0]: https://github.com/DevSajjadAli/genvoris-docs/releases/tag/sdk-v1.0.0
