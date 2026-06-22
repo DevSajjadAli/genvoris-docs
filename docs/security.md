@@ -36,11 +36,13 @@ The unversioned `https://api.genvoris.org/widget.js` URL always serves the lates
 
 ```html
 <script
-  src="https://api.genvoris.org/widget-1.4.2.js"
+  src="https://api.genvoris.org/widget-1.4.2.js?no_fab=1"
   integrity="sha384-REPLACE_WITH_PUBLISHED_HASH"
   crossorigin="anonymous"
   defer
-  data-api-key="gvk_live_xxxxxxxx"
+  data-api-url="/genvoris-proxy/"
+  data-events-url="/genvoris-proxy/api/v1/events"
+  data-token="{{ sessionToken }}"
 ></script>
 ```
 

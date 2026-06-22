@@ -110,7 +110,7 @@ Subscriptions, orders, refunds, and shopper lifecycle are wired automatically:
 | `woocommerce_order_refunded` | Roll back credits or revoke `PAY_PER_USE` sessions for the refunded order. |
 | `delete_user` | Detach the local shopper row (kept for audit; can be hard-purged via uninstall). |
 
-The plugin also receives webhooks **from** Genvoris (`end_customer.quota_exhausted`, `plan.updated`, etc.) at `/wp-json/genvoris/v1/webhook`, verified with HMAC-SHA256 (constant-time comparison + 5-minute clock-skew window). See [the standard webhook format](../api/webhooks#signature-header).
+The plugin also receives webhooks **from** Genvoris (`tryon.completed`, `customer.quota_exhausted`, `credit.low_balance`, plus legacy aliases such as `end_customer.quota_exhausted`) at `/wp-json/genvoris/v1/webhook`, verified with HMAC-SHA256 (constant-time comparison + 5-minute clock-skew window). See [the standard webhook format](../api/webhooks#signature-header).
 
 Idempotency: every Genvoris event id is recorded in `wp_genvoris_processed_events`. Replays are no-ops.
 

@@ -77,12 +77,17 @@ app.get('/product/:slug', async (req, res) => {
 
 ```html
 <script
-  src="https://api.genvoris.org/widget.js"
+  src="https://api.genvoris.org/widget.js?no_fab=1"
   defer
-  data-api-key="<%= process.env.GENVORIS_PUBLIC_KEY %>"
-  data-end-customer-token="<%= tryonToken %>"
+  data-api-url="/genvoris-proxy/"
+  data-events-url="/genvoris-proxy/api/v1/events"
+  data-token="<%= tryonToken %>"
+  data-platform="custom"
+  data-no-fab="true"
 ></script>
 ```
+
+The proxy path must be implemented on your backend with a strict allowlist and server-side `GENVORIS_API_KEY` injection. Do not render the live key into the template.
 
 ## 5. Handle the `end_customer_quota` paywall
 

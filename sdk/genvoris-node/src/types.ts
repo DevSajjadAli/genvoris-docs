@@ -1,5 +1,5 @@
 export interface GenvorisConfig {
-  /** Your store API key — starts with `gvk_live_` */
+  /** Your server-side store API key — starts with `gvk_live_` or `gvk_test_`. */
   apiKey: string;
   /** Override the base URL. Default: `https://genvoris.org/api/v1` */
   baseUrl?: string;

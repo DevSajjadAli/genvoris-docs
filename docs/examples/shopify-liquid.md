@@ -20,8 +20,11 @@ If you installed the [Genvoris Shopify app](../integrations/shopify), this is do
   Try it on
 </button>
 
-<script src="https://api.genvoris.org/widget.js"
-        data-api-key="{{ settings.genvoris_publishable_key }}"
+<script src="https://api.genvoris.org/widget.js?no_fab=1"
+        data-api-url="/apps/genvoris/proxy/"
+        data-events-url="/apps/genvoris/proxy/api/v1/events"
+        data-platform="shopify"
+        data-no-fab="true"
         defer></script>
 
 <script>

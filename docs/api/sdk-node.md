@@ -6,7 +6,11 @@ description: Complete TypeScript reference for @genvoris/node — client, resour
 
 # `@genvoris/node` reference
 
-The official Node.js SDK for the Genvoris Virtual Try-On API. A fully-typed wrapper around the REST API with built-in retries, timeouts, and webhook signature verification.
+The official Node.js SDK for the Genvoris Virtual Try-On API. A fully-typed wrapper around the REST API with built-in retries, timeouts, analytics resources, conversion attribution, returns tracking, and webhook signature verification.
+
+:::danger Server-side only
+Use `GENVORIS_API_KEY` only in backend code. Never bundle a `gvk_live_…` merchant key into browser JavaScript; browser-hosted widgets should use a same-origin proxy plus short-lived customer session tokens.
+:::
 
 ```bash
 npm install @genvoris/node
@@ -101,6 +105,59 @@ gv.sessions.mint(params)
 gv.sessions.revoke(params)
 //   params: { customerId, jti }
 //   returns: RevokedSession { jti, revoked: true }
+```
+
+### `gv.events`
+
+```ts
+gv.events.track({
+  sessionId: 'session_12345678',
+  eventType: 'WIDGET_OPENED',
+  productId: 'sku_123',
+  productTitle: 'Black Wrap Dress',
+  pageUrl: 'https://shop.example.com/products/dress',
+  metadata: { source: 'product_page' },
+})
+//   returns: EventsAccepted { accepted }
+
+gv.events.trackBatch([
+  { sessionId: 'session_12345678', eventType: 'PHOTO_UPLOADED' },
+  { sessionId: 'session_12345678', eventType: 'TRYON_GENERATED', productId: 'sku_123' },
+])
+//   returns: EventsAccepted { accepted }
+```
+
+Supported event types are `WIDGET_OPENED`, `PHOTO_UPLOADED`, `TRYON_GENERATED`, `TRYON_VIEWED`, `RESULT_SHARED`, `ADDED_TO_CART`, `CHECKOUT_STARTED`, and `CLOSED`.
+
+### `gv.conversions`
+
+```ts
+gv.conversions.create({
+  orderId: 'order_1001',
+  platform: 'custom', // 'shopify' | 'woocommerce' | 'custom'
+  amountCents: 12900,
+  currency: 'USD',
+  quantity: 1,
+  productId: 'sku_123',
+  productTitle: 'Black Wrap Dress',
+  sessionId: 'session_12345678',
+  customerEmail: 'shopper@example.com',
+  attributionWindowMinutes: 1440,
+})
+//   returns: ConversionEvent { id, attributedFromTryOn, deduped? }
+```
+
+### `gv.returns`
+
+```ts
+gv.returns.create({
+  orderId: 'order_1001',
+  platform: 'custom',
+  refundedAmountCents: 12900,
+  currency: 'USD',
+  reason: 'size_exchange',
+})
+//   returns: ReturnEvent { id, conversionEventId }
 ```
 
 ### `gv.webhooks`

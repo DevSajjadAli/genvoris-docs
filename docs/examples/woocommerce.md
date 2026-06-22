@@ -50,8 +50,11 @@ add_action('rest_api_init', function () {
 
 // Front-end glue.
 add_action('wp_footer', function () { ?>
-  <script src="https://api.genvoris.org/widget.js"
-          data-api-key="<?php echo esc_attr(get_option('genvoris_publishable_key')); ?>"
+  <script src="https://api.genvoris.org/widget.js?no_fab=1"
+          data-api-url="<?php echo esc_url_raw(rest_url('genvoris/v1/proxy/')); ?>"
+          data-events-url="<?php echo esc_url_raw(rest_url('genvoris/v1/proxy/api/v1/events')); ?>"
+          data-platform="woocommerce"
+          data-no-fab="true"
           defer></script>
   <script>
     document.querySelectorAll('.genvoris-tryon-btn').forEach((btn) => {

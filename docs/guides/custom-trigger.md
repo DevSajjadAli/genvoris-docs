@@ -12,9 +12,12 @@ The drop-in `widget.js` script publishes a small global API (`window.Genvoris`) 
 
 ```html
 <script
-  src="https://api.genvoris.org/widget.js"
+  src="https://api.genvoris.org/widget.js?no_fab=1"
   defer
-  data-api-key="gvk_live_xxxxxxxx"
+  data-api-url="/genvoris-proxy/"
+  data-events-url="/genvoris-proxy/api/v1/events"
+  data-token="{{ sessionToken }}"
+  data-no-fab="true"
 ></script>
 
 <button id="my-try-on">Try this on me</button>
@@ -103,4 +106,4 @@ Every field on the `openTryOn(options)` argument is optional; missing values fal
 | `productTitle` | `string` | Shown in the result card. |
 | `productCategory` | `'apparel' \| 'home' \| 'object' \| 'other'` | Routes the request to the appropriate try-on model on our side. |
 | `page_url` | `string` | Used for analytics + the `tryon.completed` webhook payload. |
-| `token` | `string` | Optional end-customer session JWT. Overrides `data-end-customer-token`. |
+| `token` | `string` | Optional end-customer session JWT. Overrides `data-token` / `data-customer-token`. |

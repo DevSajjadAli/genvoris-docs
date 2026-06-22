@@ -29,8 +29,14 @@ Add your credentials to `.env`:
 
 ```dotenv
 GENVORIS_API_KEY=gvk_live_your_key_here
+GENVORIS_API_URL=https://genvoris.org/api/v1
+GENVORIS_PROXY_UPSTREAM=https://api.genvoris.org
+GENVORIS_PROXY_PATH=genvoris-proxy
 GENVORIS_WEBHOOK_SECRET=your_webhook_secret_here
+GENVORIS_WEBHOOK_PATH=webhooks/genvoris
 ```
+
+`GENVORIS_API_BASE_URL` is also accepted as an alias for `GENVORIS_API_URL`; `GENVORIS_TRYON_UPSTREAM` and `TRYON_BACKEND_URL` are accepted as aliases for `GENVORIS_PROXY_UPSTREAM`.
 
 Confirm the connection:
 
@@ -53,7 +59,7 @@ Key options in `config/genvoris.php`:
 | Key | Default | Description |
 |---|---|---|
 | `api_key` | `env('GENVORIS_API_KEY')` | Platform API key |
-| `api_base_url` | `https://genvoris.org/api/v1` | API base URL |
+| `api_base_url` | `https://genvoris.org/api/v1` | API base URL (`GENVORIS_API_URL` / `GENVORIS_API_BASE_URL`) |
 | `timeout` | `30` | HTTP timeout (seconds) |
 | `retry.times` | `3` | Retries on 429 / 5xx (200/800/3200ms jittered backoff) |
 | `retry.sleep` | `[200, 800, 3200]` | Sleep intervals in ms |
@@ -61,10 +67,12 @@ Key options in `config/genvoris.php`:
 | `webhook.path` | `webhooks/genvoris` | Webhook route prefix |
 | `webhook.middleware` | `['api']` | Middleware groups for the webhook route |
 | `webhook.listeners` | `[]` | Additional event-to-listener bindings |
-| `proxy.path` | `genvoris-proxy` | Proxy route prefix |
+| `proxy.path` | `genvoris-proxy` | Proxy route prefix (`GENVORIS_PROXY_PATH`) |
+| `proxy.upstream` | `https://api.genvoris.org` | Try-on/widget upstream (`GENVORIS_PROXY_UPSTREAM`, `GENVORIS_TRYON_UPSTREAM`, or `TRYON_BACKEND_URL`) |
 | `proxy.middleware` | `['throttle:60,1']` | Middleware for proxy routes |
-| `proxy.allowed_paths` | `['api/analyze', 'api/tryon', 'api/config', 'api/status']` | Allowed upstream paths |
-| `proxy.enforce_origin` | `false` | When true, checks `Origin` against `APP_URL` |
+| `proxy.allowed_paths` | `['api/analyze', 'api/tryon', 'api/config', 'api/status', 'api/v1/events']` | Allowed upstream paths |
+| `proxy.events_path` | `api/v1/events` | Widget analytics path under the proxy base |
+| `proxy.enforce_origin` | `true` | When true, checks `Origin` against `APP_URL` |
 | `external_id_prefix` | `laravel_` | Prefix for external IDs |
 | `widget_url` | `https://api.genvoris.org/widget.js` | Widget script URL |
 | `cache.sessions` | `true` | Cache minted session tokens |
@@ -108,12 +116,19 @@ class TryOnController extends Controller
 
 ```blade
 {{-- In your <head> or before </body> --}}
-@genvorisConfig(['productId' => $product->id])
-@genvorisScripts
+@genvorisConfig(['productId' => $product->id, 'token' => $session->token])
+@genvorisScripts(['token' => $session->token, 'noFab' => true])
 
 {{-- Where you want the button --}}
-@genvorisTryOnButton(['productId' => $product->id, 'label' => 'Try On'])
+@genvorisTryOnButton([
+    'productId' => $product->id,
+    'productTitle' => $product->name,
+    'productImage' => $product->image_url,
+    'label' => 'Try On',
+])
 ```
+
+The rendered script uses `data-api-url`, `data-events-url`, `data-platform="laravel"`, and the short-lived token. It never prints `GENVORIS_API_KEY` into HTML.
 
 ---
 
@@ -180,10 +195,10 @@ When you add the `HasGenvorisAccess` trait to an Eloquent model:
 
 | Directive | Output |
 |---|---|
-| `@genvorisScripts` | `<script src="..." defer>` — loads the widget |
-| `@genvorisConfig($opts)` | `<script>window.genvorisConfig = {...};</script>` — config JSON |
-| `@genvorisWidget($opts)` | Config + scripts combined in one directive |
-| `@genvorisTryOnButton($opts)` | `<button data-genvoris-product="...">Try On</button>` |
+| `@genvorisScripts($opts)` | Loads the widget with `data-api-url`, `data-events-url`, `data-platform`, optional token, and optional `no_fab`. |
+| `@genvorisConfig($opts)` | `<script>window.genvorisConfig = {...};</script>` — safe config JSON with proxy/event URLs. |
+| `@genvorisWidget($opts)` | Config + scripts combined in one directive. |
+| `@genvorisTryOnButton($opts)` | `<button data-genvoris-trigger data-genvoris-product="...">Try On</button>` with optional product metadata. |
 
 > **Security:** `@genvorisConfig` never includes `api_key` or `webhook.secret` in its output. JSON is encoded with `JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP` to prevent XSS.
 
@@ -241,11 +256,17 @@ All typed events expose a single `$payload` property (the full decoded JSON obje
 
 | Portal event type | Laravel event class | Fires when |
 |---|---|---|
+| `tryon.completed` | `TryOnCompleted` | Try-on generation succeeded |
+| `tryon.failed` | `TryOnFailed` | Try-on generation failed |
+| `customer.plan_changed` | `CustomerPlanChanged` | Customer plan changed |
+| `customer.quota_exhausted` | `CustomerQuotaExhausted` | Try-on rejected for quota |
+| `credit.low_balance` | `CreditLowBalance` | Store credits crossed low-balance threshold |
+| `credit.balance_added` | `CreditBalanceAdded` | Store credits were added |
 | `end_customer.created` | `CustomerCreated` | First upsert of a customer |
 | `end_customer.updated` | `CustomerUpdated` | Customer re-upserted or PATCH'd |
 | `end_customer.cancelled` | `CustomerCancelled` | Customer DELETEd (soft cancel) |
 | `end_customer.quota_warning` | `CustomerQuotaWarning` | Customer crosses 80% of plan quota |
-| `end_customer.quota_exhausted` | `CustomerQuotaExhausted` | Try-on rejected for quota |
+| `end_customer.quota_exhausted` | `CustomerQuotaExhausted` | Legacy quota-exhausted alias |
 | `end_customer.period_rolled` | `CustomerPeriodRolled` | Period auto-rolled to new 30-day window |
 | `plan.created` | `PlanCreated` | A plan was created |
 | `plan.updated` | `PlanUpdated` | A plan was updated |
@@ -281,11 +302,11 @@ Optional: `--url` to override the destination, `--event` to change the event typ
 
 ## Proxy
 
-The package registers `POST /genvoris-proxy/{path}` to forward widget requests to the Genvoris API with your API key injected server-side — the browser never sees your key.
+The package registers `/genvoris-proxy/{path}` for `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, and `OPTIONS` to forward widget requests to the configured upstream with your API key injected server-side — the browser never sees your key.
 
 ### Security features
 
-- **Path allowlist** — only paths in `proxy.allowed_paths` are forwarded (default: `api/analyze`, `api/tryon`, `api/config`, `api/status`).
+- **Path allowlist** — only paths in `proxy.allowed_paths` are forwarded (default: `api/analyze`, `api/tryon`, `api/config`, `api/status`, `api/v1/events`).
 - **Path traversal guard** — rejects paths containing `..` or null bytes.
 - **HTTP method whitelist** — only `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `OPTIONS` are allowed; other methods return 405.
 - **Origin enforcement** — when `proxy.enforce_origin` is true, the `Origin`/`Referer` header is checked against `APP_URL` (case-insensitive).
@@ -293,7 +314,7 @@ The package registers `POST /genvoris-proxy/{path}` to forward widget requests t
 - **Key isolation** — the `X-API-Key` header is added server-side; it is stripped from the response body.
 - **Connection failure handling** — upstream 5xx or connection errors return 502 without exposing internal details.
 
-`@genvorisConfig` automatically sets `window.genvorisConfig.apiProxyBase` to the proxy URL.
+`@genvorisConfig` automatically sets `window.genvorisConfig.apiProxyBase` and `window.genvorisConfig.eventsUrl` to the same-origin proxy URLs.
 
 ---
 
@@ -354,6 +375,19 @@ The SDK never exposes the API key in exception messages.
 ```bash
 composer test
 ```
+
+## Relaunch checklist
+
+Run these in the consuming Laravel app before relaunching:
+
+```bash
+php artisan config:clear
+php artisan config:cache
+php artisan genvoris:test-connection
+php artisan route:list | grep genvoris
+```
+
+Confirm rendered pages contain `data-api-url`, `data-events-url`, and the short-lived token, but never contain `GENVORIS_API_KEY`.
 
 The test suite uses `Http::fake()` — no live API calls are made. The package ships 40+ tests across unit and feature suites:
 

@@ -86,8 +86,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         {children}
         <Script
-          src="https://api.genvoris.org/widget.js"
-          data-api-key={process.env.NEXT_PUBLIC_GENVORIS_API_KEY}
+          src="https://api.genvoris.org/widget.js?no_fab=1"
+          data-api-url="/api/genvoris/proxy/"
+          data-events-url="/api/genvoris/proxy/api/v1/events"
+          data-platform="custom"
+          data-no-fab="true"
           strategy="afterInteractive"
         />
       </body>
@@ -97,5 +100,5 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 ```
 
 :::warning
-`NEXT_PUBLIC_GENVORIS_API_KEY` is the **publishable** key (`gvk_pub_…`), not your live secret. Live keys must never reach the browser.
+Do not create `NEXT_PUBLIC_GENVORIS_API_KEY` for live merchant keys. `NEXT_PUBLIC_*` values are bundled into browser JavaScript. Keep `GENVORIS_API_KEY` in server actions/API routes only, and expose only same-origin proxy/session URLs to the widget.
 :::
