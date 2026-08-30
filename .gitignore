@@ -21,3 +21,6 @@ yarn-error.log*
 
 sdk/genvoris-node/node_modules/
 sdk/genvoris-node/dist/
+
+# Codebase knowledge-graph artifact (large binary, tooling-local)
+.codebase-memory/

@@ -1,118 +1,174 @@
 ---
 sidebar_position: 2
 title: Shopify
-description: Native Shopify app — install, pick a pricing model, drop one theme block, done.
+description: Install the Genvoris Virtual Try-On app, pick your products, add one theme block. No account, no API key, no code.
 ---
 
 # Shopify
 
-The **Genvoris Virtual Try-On** Shopify app turns the universal REST flow described in [Custom integration](./custom) into a one-click install. It handles install, theme injection, plan creation, per-shopper quota, payments, and privacy webhooks — you only choose how shoppers should pay.
+The **Genvoris Virtual Try-On** app adds a photorealistic AI try-on to your
+product pages. Install it, choose which products should offer try-on, and drop
+one block into your theme.
+
+There is **no separate account to create and no API key to paste** — the app
+provisions everything for your store during install.
 
 > Listing: [Shopify App Store → Genvoris Virtual Try-On](https://apps.shopify.com/genvoris-virtual-try-on)
 
-## What it gives you
+---
 
-- **One-click install** from the Shopify App Store. The install flow automatically provisions your Genvoris portal account and links your store. No second signup.
-- **Theme block** for the theme editor — drop "Genvoris Try-On" onto your product template, no code edits required.
-- **Five monetisation models** (pick one in `App → Monetization`):
+## What the shopper sees
 
-  | Model | What the shopper does |
-  | --- | --- |
-  | `FREE_ALL` | Tries on freely. Merchant absorbs the cost. |
-  | `SUBSCRIPTION` | Buys a recurring subscription product → unlimited try-ons while active. |
-  | `CREDITS_WITH_PURCHASE` | Each paid order grants N try-on credits (configurable expiry). |
-  | `PAY_PER_USE` | Pays per try-on at a one-off checkout. |
-  | `FREEMIUM` | First N/month free; afterwards a paid subscription product. |
-- **Signed storefront calls** — every widget request is signed by Shopify (`/apps/genvoris/*`), so your Genvoris API key never leaves your store backend.
-- **Two-layer accounting** — the app debits your Genvoris credit pool *and* meters per-shopper quota inside the app.
-- **GDPR / privacy webhooks** wired out of the box (`customers/data_request`, `customers/redact`, `shop/redact`).
+A try-on button appears under the product, on the products you enable.
 
-## Install
+![Try-on button on a product page](/img/shopify/storefront-1-button.png)
 
-1. From the Shopify App Store, click **Add app** and accept the requested scopes.
-2. The app's **Settings** page is the only thing you have to fill in:
-   - Paste your Genvoris store API key (issued in the [Genvoris dashboard](https://genvoris.org/dashboard) under **Integration → API keys**).
-   - Click **Test connection**.
-3. Open **Monetization**, pick a model, save. For `FREEMIUM` and `SUBSCRIPTION` the app auto-creates the matching Shopify subscription product **and** the matching Genvoris plan via [`POST /api/v1/plans`](../api/plans).
-4. In **Online Store → Themes → Customise**, add the **Genvoris Try-On** block to your product template. Save.
+Clicking it opens the try-on panel. Genvoris reads the product and writes
+photo guidance specific to that garment, so shoppers know what kind of picture
+will actually work.
 
-That's it. Visit any product page — the widget loads and behaves according to your chosen model.
+![Try-on upload step with AI-written photo guidance](/img/shopify/storefront-2-upload.png)
 
-## Scopes the app requests
+The shopper uploads a clear, full-body photo. Head-to-toe portraits work;
+passport-style crops are rejected with an explanation rather than a failed
+generation.
+
+![Photo staged and ready to generate](/img/shopify/storefront-3-ready.png)
+
+The result is generated in **8–10 seconds**. Pose, background, lower body and
+accessories are preserved — only the garment changes.
+
+![Generated virtual try-on result](/img/shopify/storefront-4-result.png)
+
+From here the shopper can download the image, share it, try another photo, or
+rate the result.
+
+---
+
+## Setting it up
+
+### 1. Install
+
+Install from the Shopify App Store. On the permission screen you will see the
+app asks only for **product** access — see [Permissions](#permissions) below.
+
+Setup completes during install. When the app opens, it is already connected.
+
+![App dashboard after install](/img/shopify/admin-1-dashboard.png)
+
+### 2. Confirm the connection
+
+**Connection** shows the account, the masked API key, your shop domain, when
+it connected, and webhook status. You do not need to do anything here — it is
+a status page, not a setup step.
+
+![Connection page showing an active connection](/img/shopify/admin-2-connection.png)
+
+If setup ever fails (for example a transient network problem during install),
+this page has **Repair connection**, which re-runs provisioning. The app also
+repairs itself automatically on the next page load.
+
+### 3. Choose your products
+
+**Products** controls which products offer try-on. Try-on suits apparel and
+home textiles; you generally do not want it on gift cards or accessories.
+
+![Product selection](/img/shopify/admin-3-products.png)
+
+### 4. Configure the widget
+
+**Widget** controls placement, button text, and appearance.
+
+![Widget settings](/img/shopify/admin-4-widget.png)
+
+### 5. Add the theme block
+
+Go to **Online Store → Themes → Customize**, open a product template, choose
+**Add block**, and pick **Genvoris Virtual Try-On**. Save.
+
+This is the only step that touches your theme, and it is done through
+Shopify's own editor — no code edits, no `theme.liquid` changes.
+
+---
+
+## Pricing
+
+App charges are handled entirely by **Shopify App Pricing**. Your Genvoris
+plan appears on your Shopify invoice alongside your other apps; there is no
+separate billing relationship and nothing to pay for off-platform.
+
+| Plan | Price | Try-ons / month | Variations |
+| --- | --- | --- | --- |
+| Free | $0 | 30 | 1 |
+| Starter | $27 / month | 200 | 1 |
+| Growth | $130 / month | 1,000 | 4 |
+| Pro | $380 / month | 3,000 | 4 |
+| Business | $550 / month | 5,000 | 4 |
+
+Development stores are free on every plan, so you can evaluate the app fully
+before paying anything.
+
+---
+
+## Permissions
+
+The app requests two scopes:
 
 | Scope | Why |
 | --- | --- |
-| `read_products` / `write_products` | List products in the admin UI; auto-create the subscription product and selling-plan group for paid monetisation models. |
-| `read_orders` / `write_orders` | Read paid orders for `CREDITS_WITH_PURCHASE`; create one-off checkouts for `PAY_PER_USE`. **This triggers Shopify's Protected Customer Data review** — approve it during install. |
+| `read_products` | List your products in the admin UI so you can choose which ones offer try-on. |
+| `write_products` | Provision the selling-plan product used by storefront pricing features. |
 
-The app **does not** request `read_customers` / `write_customers`. Shopper identity is sourced from the App-Proxy session, and the app never queries customer records via the Admin API.
+**The app requests no protected customer data.** It does not read orders,
+customers, or checkout data. Storefront try-on calls are signed by Shopify
+through the App Proxy (`/apps/genvoris/*`), so your API key stays server-side
+and never reaches the browser.
 
-## Storefront request flow
+The GDPR privacy webhooks (`customers/data_request`, `customers/redact`,
+`shop/redact`) are wired up automatically.
 
-```
-Storefront product page
-       │
-       │  /apps/genvoris/status?logged_in_customer_id=…
-       ▼  (signed by Shopify App Proxy)
-Genvoris Shopify app
-       │
-       │  Reads the verified shop from the proxy session,
-       │  uses the stored API key to call:
-       ▼
-genvoris.org /api/v1/customers/{id}/usage
-       │
-       ▼
-JSON: { canTryOn, ctaType, remaining, … }
-       │
-       ▼
-Widget chooses one of:
- • Show "Try On" button       (canTryOn = true)
- • Redirect to /apps/genvoris/checkout    (PAY_PER_USE)
- • Show upgrade banner with plan URL      (FREEMIUM exhausted)
- • Show "Subscribe" link                  (SUBSCRIPTION not active)
-```
+---
 
-App-Proxy URLs are signed by Shopify; the verified shop is read from the proxy session, **not** from `?shop=` query, so a malicious storefront cannot mint tokens for another shop's shopper.
+## Storefront pricing models
 
-## Webhooks
+Genvoris supports charging your own shoppers for try-ons — subscription
+gating, credits with purchase, pay-per-use, and freemium.
 
-The Shopify app subscribes to:
+**These are disabled in the current version** and shown as *Coming soon* on
+the Monetization page. They depend on order-scope access that this release
+deliberately does not request. The active model is **Free for all visitors**:
+every shopper can try on, within your plan's monthly quota.
 
-| Topic | Behaviour |
-| --- | --- |
-| `app/uninstalled` | Mark the shop inactive (data retained 30 days for re-install). |
-| `orders/paid` | Grant credits to the shopper for `CREDITS_WITH_PURCHASE`. |
-| `app_subscriptions/update` | Activate / deactivate `SUBSCRIPTION` model. |
-| `customers/data_request` | Privacy compliance — return stored data (or empty). |
-| `customers/redact` | Privacy compliance — hard-delete the matching record. |
-| `shop/redact` | Privacy compliance — hard-delete every row tied to the shop. |
+This is separate from how Genvoris bills you. Storefront pricing is revenue
+between you and your shoppers; Genvoris is billed only through Shopify App
+Pricing.
 
-The app also receives webhooks **from** Genvoris (`tryon.completed`, `customer.quota_exhausted`, `credit.low_balance`, plus legacy aliases such as `end_customer.quota_exhausted`) at the same `/webhooks` endpoint, signed with HMAC-SHA256 in [the standard format](../api/webhooks#signature-header).
+---
 
-Idempotency: every Shopify `webhook_id` and Genvoris event id is recorded internally — replays are no-ops.
+## Troubleshooting
 
-## Two-layer credit accounting
+**The button does not appear on my product page.**
+Check three things, in order: the product is enabled under **Products**, the
+widget is on under **Widget**, and the **Genvoris Virtual Try-On** block has
+been added to the product template in the theme editor. The third is the one
+most often missed.
 
-```
-L1   Store ↔ Genvoris portal
-     • Merchant buys credit packs / subscription on genvoris.org
-     • Every try-on debits the shop's pool via /api/tryon/track
-     • If exhausted → portal returns 402 → widget shows "service paused"
+**A shopper's photo is rejected.**
+Try-on needs a full-body, head-to-toe portrait. Selfies and passport crops are
+rejected on purpose — generating from them produces poor results, so the app
+declines rather than returning something unusable.
 
-L2   Shopper ↔ Store (this app)
-     • Each model defines its own per-shopper quota
-     • /apps/genvoris/credits/use atomically decrements before /api/tryon
-     • Decrement is rolled back if /api/tryon returns non-2xx
-     • 402 end_customer_quota → widget shows the model-appropriate UX
-```
+**The connection shows as not configured.**
+Open **Connection** and use **Repair connection**. This re-runs provisioning
+and issues fresh credentials.
 
-Both layers are checked **before** any AI quota is spent.
+**Results look wrong or contain artifacts.**
+Generation is probabilistic. Photo quality is the single biggest factor: even
+lighting, a plain background, a straight-on pose, and the full body in frame
+all improve results significantly. Shoppers can retry with a different photo.
 
-## Limits & caveats
-
-- `orders/paid` requires Shopify's **Protected Customer Data** approval — accept it on install. The rest of the app keeps working without it; only `CREDITS_WITH_PURCHASE` is gated.
-- Shopify storefront shoppers are tracked as Genvoris end-customer records (with `externalId: shopify_<id>`) so they are isolated from other stores' shoppers.
+---
 
 ## Support
 
-Email **support@genvoris.org** or reply on the Shopify App Store listing.
+Email **support@genvoris.org**, or reply on the Shopify App Store listing.
